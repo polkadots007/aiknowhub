@@ -9,7 +9,7 @@ export const useNotesStore = create<NotesState>()(
     activeNote: null,
     searchTerm: '',
     searchType: "title",
-    // selectedNotes: [],
+    aiContent:'',
     addNote: () => {
         const newNote = {
             id: Date.now(),
@@ -34,6 +34,11 @@ export const useNotesStore = create<NotesState>()(
     setSearchType: (key: SearchTypeProp) => {
         set(() => ({
             searchType : key 
+        }))
+    },
+    setAIResponse: (aiContent: string) => {
+        set(() => ({
+            aiContent : aiContent 
         }))
     },
     setActiveNote: (note: Note | null) => set({ activeNote: note }),

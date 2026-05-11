@@ -10,13 +10,19 @@ import type { NotesState } from "../types";
 import { useState } from "react";
 import { AIModal, ConfirmationModal } from "./Reusable/Modal";
 import SearchBar from "./Search";
+import { Spinner } from "./Reusable/Spinner";
 
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
   const deleteNote = useNotesStore((state: NotesState) => state.deleteNote);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openAIModal, setOpenAIModal] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
+
   const activeNote = useNotesStore((state: NotesState) => state.activeNote);
+  const setAIResponse = useNotesStore(
+    (state: NotesState) => state.setAIResponse,
+  );
 
   function onConfirm() {
     if (activeNote) deleteNote(activeNote?.id);
@@ -25,8 +31,28 @@ const Header = () => {
   function onCancel() {
     setOpenModal(false);
   }
-  function onConfirmAIModal(response: string) {
-    console.log("response", response);
+  async function onConfirmAIModal(action: string) {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3000/notes/ai", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: action,
+          content: activeNote?.content,
+        }),
+      });
+      const fetchedRes = await response.json();
+      console.log("fetched", fetchedRes.content);
+      setAIResponse(fetchedRes.content);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+      setOpenAIModal(false);
+    }
   }
   function onCancelAIModal() {
     setOpenAIModal(false);
@@ -87,10 +113,10 @@ const Header = () => {
         <AIModal
           open={openAIModal}
           onConfirm={onConfirmAIModal}
-          onCancel={onCancelAIModal}
-          content={activeNote?.content || ""}
+          onClose={onCancelAIModal}
         />
       )}
+      {isLoading && <Spinner />}
     </div>
   );
 };

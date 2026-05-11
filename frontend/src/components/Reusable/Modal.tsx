@@ -1,5 +1,5 @@
 import { BoltIcon, TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { act, useState } from "react";
+import { useState } from "react";
 
 const ConfirmationModal = ({
   open,
@@ -55,79 +55,75 @@ const ConfirmationModal = ({
 const AIModal = ({
   open,
   onConfirm,
-  onCancel,
-  content,
+  onClose,
 }: {
   open: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-  content: string;
+  onConfirm: (action: string) => void;
+  onClose: () => void;
 }) => {
   const [aiAction, setAIAction] = useState<string>("");
+  const actions: string[] = [
+    "Summarize",
+    "Improve",
+    "Explain",
+    "Generate Title",
+  ];
   function chooseAction(action: string) {
     setAIAction(action);
   }
-  function onApply() {}
-  if (!open) return <></>;
+  function handleApply(action: string) {
+    onClose();
+    onConfirm(action);
+  }
+  if (!open) return null;
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-      <div className="w-2/4 border border-slate-800">
-        <div className="flex justify-between border-b bg-blue-600 px-2 py-2">
-          <div className="w-6 h-6 text-white">
-            <BoltIcon />
+    <>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div className="w-2/4 bg-black border border-slate-800 rounded-lg shadow-xl">
+          <div className="flex justify-between border-b bg-blue-600 px-2 py-2">
+            <div className="w-6 h-6 text-white">
+              <BoltIcon />
+            </div>
+            <div className="text-xl text-white font-semibold">
+              What should AI do?
+            </div>
+            <div
+              className="w-6 h-6 text-white cursor-pointer"
+              onClick={() => onClose()}
+            >
+              <XMarkIcon />
+            </div>
           </div>
-          <div className="text-xl text-white font-semibold">
-            What should AI do?
+          <div className="grid grid-cols-2 gap-4 my-4 h-30 place-items-center">
+            {actions.map((action: string) => (
+              <button
+                key={action}
+                className={` ${aiAction === action ? "bg-blue-800 border-white" : ""} flex gap-1 py-3 w-[10rem] justify-center items-center border border-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-800`}
+                onClick={() => chooseAction(action)}
+              >
+                {action}
+              </button>
+            ))}
           </div>
-          <div
-            className="w-6 h-6 text-white cursor-pointer"
-            onClick={() => onCancel()}
-          >
-            <XMarkIcon />
+          <div className="flex justify-end gap-2 h-13 px-2 mt-16">
+            <button
+              className="flex gap-1 items-center border border-blue-500 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-600"
+              onClick={() => onClose()}
+            >
+              Cancel
+            </button>
+            <button
+              className="group flex gap-1 items-center bg-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-800"
+              disabled={!aiAction}
+              onClick={() => handleApply(aiAction)}
+            >
+              Apply AI
+            </button>
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4 my-4 h-30 place-items-center">
-          <button
-            className={` ${aiAction === "Summarize" && "bg-blue-800 border-white"} flex gap-1 py-3 w-[10rem] justify-center items-center border border-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-800`}
-            onClick={() => chooseAction("Summarize")}
-          >
-            Summarize
-          </button>
-          <button
-            className={` ${aiAction === "Improve" && "bg-blue-800 border-white"} flex gap-1 py-3 w-[10rem] justify-center items-center border border-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-800`}
-            onClick={() => chooseAction("Improve")}
-          >
-            Improve
-          </button>
-          <button
-            className={` ${aiAction === "Explain" && "bg-blue-800 border-white"} flex gap-1 py-3 w-[10rem] justify-center items-center border border-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-800`}
-            onClick={() => chooseAction("Explain")}
-          >
-            Explain
-          </button>
-          <button
-            className={` ${aiAction === "Generate Title" && "bg-blue-800 border-white"} flex gap-1 py-3 w-[10rem] justify-center items-center border border-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-800`}
-            onClick={() => chooseAction("Generate Title")}
-          >
-            Generate Title
-          </button>
-        </div>
-        <div className="flex justify-end gap-2 h-13 px-2 mt-16">
-          <button
-            className="flex gap-1 items-center border border-blue-500 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-600"
-            onClick={() => onCancel()}
-          >
-            Cancel
-          </button>
-          <button
-            className="group flex gap-1 items-center bg-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-blue-800"
-            onClick={() => onApply()}
-          >
-            Apply AI
-          </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 export { ConfirmationModal, AIModal };

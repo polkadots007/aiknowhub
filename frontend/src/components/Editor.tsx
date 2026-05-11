@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNotesStore } from "../store/useNotesStore";
-import type { Note } from "../types";
+import type { Note, NotesState } from "../types";
+import ReactMarkdown from "react-markdown";
 
 const Editor = () => {
   const updateNote = useNotesStore((state) => state.updateNote);
   const deleteNote = useNotesStore((state) => state.deleteNote);
   const activeNote = useNotesStore((state) => state.activeNote);
   const setActiveNote = useNotesStore((state) => state.setActiveNote);
+  const aiContent = useNotesStore((state) => state.aiContent);
+  const setAIResponse = useNotesStore(
+    (state: NotesState) => state.setAIResponse,
+  );
+
   const [title, setTitle] = useState<string>(activeNote?.title ?? "");
   const [content, setContent] = useState<string>(activeNote?.content ?? "");
 
@@ -33,10 +39,11 @@ const Editor = () => {
         deleteNote(activeNote?.id);
       else setActiveNote(null);
     }
+    setAIResponse("");
   }
   useEffect(() => {});
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-row gap-2 justify-center items-center">
       <div className="w-[70dvw]">
         <div className="flex justify-between pt-2">
           <div className="font-semibold text-2xl text-blue-500 text-left">
@@ -68,6 +75,14 @@ const Editor = () => {
           onChange={onContentChange}
         />
       </div>
+      {aiContent.length > 0 && (
+        <div className="w-[25dvw] border-1 border-blue-600 px-3 py-1">
+          <h2 className="border-b py-5 w-full">AI Generated Response</h2>
+          <div className="w-full h-[75dvh] border-gray-500 border-2 p-4 my-4 break-words overflow-y-auto">
+            <ReactMarkdown>{aiContent}</ReactMarkdown>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
