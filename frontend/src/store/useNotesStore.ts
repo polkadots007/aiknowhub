@@ -10,6 +10,7 @@ export const useNotesStore = create<NotesState>()(
     searchTerm: '',
     searchType: "title",
     aiContent:'',
+    aiAction: '',
     addNote: () => {
         const newNote = {
             id: Date.now(),
@@ -36,9 +37,14 @@ export const useNotesStore = create<NotesState>()(
             searchType : key 
         }))
     },
-    setAIResponse: (aiContent: string) => {
+    setAIContent: (aiContent: string) => {
         set(() => ({
             aiContent : aiContent 
+        }))
+    },
+    setAIAction: (action: string) => {
+        set(() => ({
+            aiAction : action 
         }))
     },
     setActiveNote: (note: Note | null) => set({ activeNote: note }),

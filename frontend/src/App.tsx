@@ -4,9 +4,15 @@
 // import heroImg from "./assets/hero.png";
 import "./App.css";
 import Notes from "./pages/Notes";
+import { Toaster } from "sonner";
 
 function App() {
-  return <Notes />;
+  return (
+    <>
+      <Notes />
+      <Toaster richColors position="top-center" />
+    </>
+  );
 }
 
 export default App;

@@ -1,8 +1,4 @@
-import {
-  Cog6ToothIcon,
-  PlusIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Logo } from "./Reusable/Icons";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { useNotesStore } from "../store/useNotesStore";
@@ -11,6 +7,8 @@ import { useState } from "react";
 import { AIModal, ConfirmationModal } from "./Reusable/Modal";
 import SearchBar from "./Search";
 import { Spinner } from "./Reusable/Spinner";
+import { toast } from "sonner";
+import { Toggle } from "./Reusable/Toggle";
 
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
@@ -20,9 +18,8 @@ const Header = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const activeNote = useNotesStore((state: NotesState) => state.activeNote);
-  const setAIResponse = useNotesStore(
-    (state: NotesState) => state.setAIResponse,
-  );
+  const setAIContent = useNotesStore((state: NotesState) => state.setAIContent);
+  const setAIAction = useNotesStore((state: NotesState) => state.setAIAction);
 
   function onConfirm() {
     if (activeNote) deleteNote(activeNote?.id);
@@ -33,6 +30,7 @@ const Header = () => {
   }
   async function onConfirmAIModal(action: string) {
     setLoading(true);
+    setAIAction(action);
     try {
       const response = await fetch("http://localhost:3000/notes/ai", {
         method: "POST",
@@ -46,9 +44,15 @@ const Header = () => {
       });
       const fetchedRes = await response.json();
       console.log("fetched", fetchedRes.content);
-      setAIResponse(fetchedRes.content);
+      setAIContent(fetchedRes.content);
+      toast.success("Generated Content", {
+        duration: 2000,
+      });
     } catch (error) {
       console.error(error);
+      toast.error("Failed to generat content", {
+        duration: 2000,
+      });
     } finally {
       setLoading(false);
       setOpenAIModal(false);
@@ -93,10 +97,7 @@ const Header = () => {
                   </button>
                 </>
               )}
-              <button className="flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer">
-                <Cog6ToothIcon className="w-6 h-6 text-blue-500" />
-                Settings
-              </button>
+              <Toggle />
             </div>
           </div>
         </div>

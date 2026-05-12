@@ -1,8 +1,9 @@
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
 import type { SearchTypeProp } from "../../types";
 
 type ItemProp = { key: string; val: SearchTypeProp };
+type ItemActionProp = { key: string; val: string };
 const Dropdown = ({
   values,
   onSelect,
@@ -62,4 +63,62 @@ const Dropdown = ({
   );
 };
 
-export default Dropdown;
+const AIActionDropdown = ({
+  values,
+  onSelect,
+}: {
+  values: Array<ItemActionProp>;
+  onSelect: (value: string) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState<string>();
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  function handleClick(item: ItemActionProp) {
+    onSelect(item.key);
+    setSelectedValue(item.key);
+    setOpen(false);
+  }
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (!wrapperRef.current?.contains(e.target as Node)) setOpen(false);
+    }
+    if (open) {
+      document.addEventListener("click", handleClick);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClick);
+    };
+  }, [open]);
+  useEffect(() => {}, [selectedValue]);
+  return (
+    <div className="relative inline-block" ref={wrapperRef}>
+      {/* Trigger */}
+      <button
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex gap-2 justify-center items-center bg-blue-600 text-white px-3 py-1 rounded cursor-pointer"
+      >
+        <Cog6ToothIcon className="w-6 h-6 text-white" />
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute z-999 right-0 mt-2 w-40 bg-gray-900 border border-slate-700 rounded shadow-lg text-white">
+          {values.map((item: ItemActionProp, index: number) => (
+            <button
+              key={index}
+              className={`block w-full text-left px-4 py-2 hover:bg-blue-600 cursor-pointer ${selectedValue === item.key && "bg-blue-800"}`}
+              onClick={() => handleClick(item)}
+            >
+              {selectedValue === item.key ? "✓ " + item.val : item.val}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export { Dropdown, AIActionDropdown };

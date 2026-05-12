@@ -126,6 +126,22 @@ Improve
 Explain
 Generate title
 
+⚡ Then user chooses
+
+Buttons like:
+
+Replace Note
+Append
+Copy
+Retry
+
+That becomes powerful UX.
+After AI response panel:
+
+👉 “Apply to Note”
+
+That creates nice interaction loop.
+
 🔥 Inline title editing (you’re close already)
 double click → edit
 blur → save
