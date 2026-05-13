@@ -48,7 +48,7 @@ const Editor = () => {
         },
         body: JSON.stringify({
           action: aiAction,
-          content: activeNote?.content,
+          content: content,
         }),
       });
       const fetchedRes = await response.json();
@@ -100,13 +100,13 @@ const Editor = () => {
   return (
     <div className="flex flex-row gap-2 justify-center items-center">
       <div className="w-[70dvw]">
-        <div className="flex justify-between pt-2">
-          <div className="font-semibold text-2xl text-blue-500 text-left">
-            <input value={title} onChange={onTitleChange} />
+        <div className="flex pt-2">
+          <div className="flex-1 mr-2 font-semibold text-2xl text-blue-500 text-left">
+            <input value={title} onChange={onTitleChange} className="w-full" />
           </div>
           <div className="flex gap-2">
             <button
-              className="flex gap-1 items-center border-1 border-blue-600 px-3 py-1 rounded text-sm cursor-pointer text-white hover:bg-blue-600"
+              className="flex gap-1 items-center border-1 border-blue-600 px-3 py-1 rounded text-sm cursor-pointer text-blue-600 hover:bg-blue-600 hover:text-white"
               onClick={() => cancelNote(activeNote)}
             >
               Cancel

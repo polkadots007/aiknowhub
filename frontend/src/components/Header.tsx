@@ -3,7 +3,7 @@ import { Logo } from "./Reusable/Icons";
 import { BoltIcon } from "@heroicons/react/24/outline";
 import { useNotesStore } from "../store/useNotesStore";
 import type { NotesState } from "../types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AIModal, ConfirmationModal } from "./Reusable/Modal";
 import SearchBar from "./Search";
 import { Spinner } from "./Reusable/Spinner";
@@ -18,8 +18,11 @@ const Header = () => {
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const activeNote = useNotesStore((state: NotesState) => state.activeNote);
+  const isDarkTheme = useNotesStore((state: NotesState) => state.isDarkTheme);
   const setAIContent = useNotesStore((state: NotesState) => state.setAIContent);
   const setAIAction = useNotesStore((state: NotesState) => state.setAIAction);
+  const setTheme = useNotesStore((state: NotesState) => state.setTheme);
+  const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
 
   function onConfirm() {
     if (activeNote) deleteNote(activeNote?.id);
@@ -45,7 +48,7 @@ const Header = () => {
       const fetchedRes = await response.json();
       console.log("fetched", fetchedRes.content);
       setAIContent(fetchedRes.content);
-      toast.success("Generated Content", {
+      toast.success("Generated Content for saved changes in Note", {
         duration: 2000,
       });
     } catch (error) {
@@ -61,10 +64,26 @@ const Header = () => {
   function onCancelAIModal() {
     setOpenAIModal(false);
   }
+  function handleToggle() {
+    setDarkMode((prev: boolean) => {
+      if (prev) {
+        document.documentElement.classList.remove("dark");
+      } else {
+        document.documentElement.classList.add("dark");
+      }
+      setTheme(!prev);
+      return !prev;
+    });
+  }
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkTheme);
+  }, [isDarkTheme]);
+
   return (
     <div>
       <div>
-        <div className="bg-gray-950 border-b border-slate-800 text-white p-4">
+        <div className="bg-white dark:bg-gray-950 border-b border-slate-800 text-white p-4">
           <div className="flex justify-between">
             {/* Left */}
             <Logo />
@@ -76,7 +95,7 @@ const Header = () => {
                 className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
                 onClick={addNote}
               >
-                <PlusIcon className="w-6 h-6 text-blue-500 group-hover:stroke-white" />
+                <PlusIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
                 New Note
               </button>
               {activeNote && (
@@ -85,19 +104,19 @@ const Header = () => {
                     className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
                     onClick={() => setOpenAIModal(true)}
                   >
-                    <BoltIcon className="w-6 h-6 text-blue-500 group-hover:stroke-white" />
+                    <BoltIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
                     AI
                   </button>
                   <button
                     className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
                     onClick={() => setOpenModal(true)}
                   >
-                    <TrashIcon className="w-6 h-6 text-blue-500 group-hover:stroke-white" />
+                    <TrashIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
                     Delete
                   </button>
                 </>
               )}
-              <Toggle />
+              <Toggle toggled={isDarkMode} setToggle={handleToggle} />
             </div>
           </div>
         </div>

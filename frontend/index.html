@@ -8,6 +8,16 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      const theme = localStorage.getItem("notes-storage");
+
+      if (theme) {
+        const parsedTheme = JSON.parse(theme);
+        const isDark = parsedTheme.state.isDarkTheme;
+
+        document.documentElement.classList.toggle("dark", isDark);
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

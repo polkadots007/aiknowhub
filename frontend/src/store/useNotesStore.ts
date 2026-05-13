@@ -11,6 +11,7 @@ export const useNotesStore = create<NotesState>()(
     searchType: "title",
     aiContent:'',
     aiAction: '',
+    isDarkTheme: false,
     addNote: () => {
         const newNote = {
             id: Date.now(),
@@ -47,6 +48,9 @@ export const useNotesStore = create<NotesState>()(
             aiAction : action 
         }))
     },
+    setTheme: (isDark: boolean) => set({
+        isDarkTheme: isDark
+    }),
     setActiveNote: (note: Note | null) => set({ activeNote: note }),
     updateNote: (updatedNote: Note) => set((state) => ({
         notes: state.notes.map((note) => note.id === updatedNote.id ? updatedNote: note),
@@ -63,5 +67,6 @@ export const useNotesStore = create<NotesState>()(
     name: "notes-storage",
     partialize: (state) => ({
       notes: state.notes,
+      isDarkTheme: state.isDarkTheme
     }),
 }))

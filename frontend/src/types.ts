@@ -16,6 +16,8 @@ export interface NotesState {
     // addToSelected : (notes: Array<Note>) => void,
     searchTerm: string,
     searchType: SearchTypeProp,
+    isDarkTheme: boolean,
+    setTheme: (isDark: boolean) => void,
     setSearchTerm: (searchKey : string) => void,
     setAIContent: (aiContent : string) => void,
     setAIAction: (action : string) => void,

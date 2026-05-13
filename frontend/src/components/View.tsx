@@ -64,7 +64,7 @@ const ViewNotes = () => {
         {filteredNotes.map((note: Note) => (
           <div
             key={note?.id}
-            className="flex flex-col gap-2 h-20 items-center justify-center cursor-pointer hover:border hover:border-slate-800"
+            className="flex flex-col gap-2  items-center justify-center cursor-pointer hover:border hover:border-slate-800"
           >
             <DocumentTextIcon
               className="w-8 h-8 text-blue-500"
@@ -72,7 +72,7 @@ const ViewNotes = () => {
             />
             {isEditingId !== note.id ? (
               <div
-                className="text-white"
+                className="text-blue-600 dark:text-white text-center line-clamp-2"
                 onDoubleClick={(event: React.MouseEvent<HTMLDivElement>) =>
                   onEditTitle(event, note)
                 }

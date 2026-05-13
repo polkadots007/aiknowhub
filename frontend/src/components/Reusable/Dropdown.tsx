@@ -105,11 +105,11 @@ const AIActionDropdown = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute z-999 right-0 mt-2 w-40 bg-gray-900 border border-slate-700 rounded shadow-lg text-white">
+        <div className="absolute z-999 right-0 mt-2 w-40 bg-white dark:bg-gray-900 border border-slate-700 rounded shadow-lg text-blue-600 dark:text-white">
           {values.map((item: ItemActionProp, index: number) => (
             <button
               key={index}
-              className={`block w-full text-left px-4 py-2 hover:bg-blue-600 cursor-pointer ${selectedValue === item.key && "bg-blue-800"}`}
+              className={`block w-full text-left px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer ${selectedValue === item.key && "bg-blue-600 text-white"}`}
               onClick={() => handleClick(item)}
             >
               {selectedValue === item.key ? "✓ " + item.val : item.val}
