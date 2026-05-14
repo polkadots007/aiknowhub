@@ -17,11 +17,14 @@ const Header = () => {
   const [openAIModal, setOpenAIModal] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const activeNote = useNotesStore((state: NotesState) => state.activeNote);
-  const isDarkTheme = useNotesStore((state: NotesState) => state.isDarkTheme);
-  const setAIContent = useNotesStore((state: NotesState) => state.setAIContent);
-  const setAIAction = useNotesStore((state: NotesState) => state.setAIAction);
-  const setTheme = useNotesStore((state: NotesState) => state.setTheme);
+  const {
+    activeNote,
+    isDarkTheme,
+    setAIContent,
+    setLastPromptAction,
+    setTheme,
+    setPromptContent,
+  } = useNotesStore();
   const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
 
   function onConfirm() {
@@ -33,7 +36,8 @@ const Header = () => {
   }
   async function onConfirmAIModal(action: string) {
     setLoading(true);
-    setAIAction(action);
+    setLastPromptAction(action);
+    if (activeNote) setPromptContent(activeNote.content);
     try {
       const response = await fetch("http://localhost:3000/notes/ai", {
         method: "POST",

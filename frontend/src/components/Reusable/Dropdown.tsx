@@ -63,7 +63,7 @@ const Dropdown = ({
   );
 };
 
-const AIActionDropdown = ({
+const ActionDropdown = ({
   values,
   onSelect,
 }: {
@@ -121,4 +121,4 @@ const AIActionDropdown = ({
   );
 };
 
-export { Dropdown, AIActionDropdown };
+export { Dropdown, ActionDropdown };

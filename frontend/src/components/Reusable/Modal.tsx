@@ -61,7 +61,7 @@ const AIModal = ({
   onConfirm: (action: string) => void;
   onClose: () => void;
 }) => {
-  const [aiAction, setAIAction] = useState<string>("");
+  const [lastPromptAction, setLastPromptAction] = useState<string>("");
   const actions: string[] = [
     "Summarize",
     "Improve",
@@ -69,7 +69,7 @@ const AIModal = ({
     "Generate Title",
   ];
   function chooseAction(action: string) {
-    setAIAction(action);
+    setLastPromptAction(action);
   }
   function handleApply(action: string) {
     onClose();
@@ -99,7 +99,7 @@ const AIModal = ({
             {actions.map((action: string) => (
               <button
                 key={action}
-                className={` ${aiAction === action ? "bg-blue-600 border-white text-white" : ""} flex gap-1 py-3 w-[10rem] justify-center items-center border border-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-blue-600 dark:text-white hover:bg-blue-600 hover:text-white`}
+                className={` ${lastPromptAction === action ? "bg-blue-600 border-white text-white" : ""} flex gap-1 py-3 w-[10rem] justify-center items-center border border-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-blue-600 dark:text-white hover:bg-blue-600 hover:text-white`}
                 onClick={() => chooseAction(action)}
               >
                 {action}
@@ -115,8 +115,8 @@ const AIModal = ({
             </button>
             <button
               className="group flex gap-1 items-center bg-blue-600 px-3 my-2 rounded text-sm cursor-pointer text-white hover:bg-white dark:hover: border hover:text-blue-500"
-              disabled={!aiAction}
-              onClick={() => handleApply(aiAction)}
+              disabled={!lastPromptAction}
+              onClick={() => handleApply(lastPromptAction)}
             >
               Apply AI
             </button>

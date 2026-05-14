@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNotesStore } from "../store/useNotesStore";
-import type { Note, NotesState } from "../types";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
-import { AIActionDropdown } from "./Reusable/Dropdown";
+import { ActionDropdown } from "./Reusable/Dropdown";
 import { Spinner } from "./Reusable/Spinner";
 
 const Editor = () => {
-  const updateNote = useNotesStore((state) => state.updateNote);
-  const deleteNote = useNotesStore((state) => state.deleteNote);
-  const activeNote = useNotesStore((state) => state.activeNote);
-  const setActiveNote = useNotesStore((state) => state.setActiveNote);
-  const aiContent = useNotesStore((state) => state.aiContent);
-  const aiAction = useNotesStore((state) => state.aiAction);
-  const setAIContent = useNotesStore((state: NotesState) => state.setAIContent);
+  const {
+    updateNote,
+    activeNote,
+    aiContent,
+    lastPromptAction,
+    setAIContent,
+    setActiveNote,
+    lastPromptContent,
+  } = useNotesStore();
   const [isLoading, setLoading] = useState<boolean>(false);
-
   const [title, setTitle] = useState<string>(activeNote?.title ?? "");
   const [content, setContent] = useState<string>(activeNote?.content ?? "");
 
@@ -38,6 +38,7 @@ const Editor = () => {
       });
     }
   }
+
   async function retryAction() {
     setLoading(true);
     try {
@@ -47,8 +48,8 @@ const Editor = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          action: aiAction,
-          content: content,
+          action: lastPromptAction,
+          content: lastPromptContent,
         }),
       });
       const fetchedRes = await response.json();
@@ -59,6 +60,9 @@ const Editor = () => {
       });
     } catch (error) {
       console.error(error);
+      toast.error("Failed generating response", {
+        duration: 2000,
+      });
     } finally {
       setLoading(false);
     }
@@ -78,27 +82,41 @@ const Editor = () => {
     }
   }
 
-  function updateNotes() {
+  function updateNotes(content: string, title: string) {
     if (activeNote?.id) {
       updateNote({
         id: activeNote.id,
         title: title,
         content: content,
       });
-      setActiveNote(null);
     }
-  }
-  function cancelNote(activeNote: Note | null) {
-    if (activeNote?.id) {
-      if (activeNote?.title === "Untitled" && activeNote?.content === "")
-        deleteNote(activeNote?.id);
-      else setActiveNote(null);
-    }
-    setAIContent("");
   }
 
+  function closeEditor() {
+    setActiveNote(null);
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (activeNote) updateNotes(content, activeNote.title);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [content]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (activeNote) updateNotes(activeNote.content, title);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [title]);
+
+  useEffect(() => {
+    setTitle(activeNote?.title ?? "");
+    setContent(activeNote?.content ?? "");
+  }, [activeNote?.id]);
+
   return (
-    <div className="flex flex-row gap-2 justify-center items-center">
+    <div className="flex flex-row gap-2 justify-center items-start">
       <div className="w-[70dvw]">
         <div className="flex pt-2">
           <div className="flex-1 mr-2 font-semibold text-2xl text-blue-500 text-left">
@@ -106,21 +124,15 @@ const Editor = () => {
           </div>
           <div className="flex gap-2">
             <button
-              className="flex gap-1 items-center border-1 border-blue-600 px-3 py-1 rounded text-sm cursor-pointer text-blue-600 hover:bg-blue-600 hover:text-white"
-              onClick={() => cancelNote(activeNote)}
-            >
-              Cancel
-            </button>
-            <button
               className="flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer text-white hover:bg-blue-800"
-              onClick={() => updateNotes()}
+              onClick={() => closeEditor()}
             >
-              Save Changes
+              Close
             </button>
           </div>
         </div>
         <textarea
-          className="w-full h-[80dvh] border-gray-500 border-2 p-4 my-4"
+          className="w-full h-[80dvh] overflow-y-auto border-gray-500 border-2 p-4 my-4 text-black dark:text-white"
           id="note-area"
           name="note-area"
           rows={4}
@@ -135,7 +147,7 @@ const Editor = () => {
           <div className="flex items-center gap-2">
             <h2 className="border-b py-5">AI Generated Response</h2>
             <div className="ml-auto">
-              <AIActionDropdown
+              <ActionDropdown
                 values={[
                   { key: "replace", val: "Replace Note" },
                   { key: "append", val: "Append" },

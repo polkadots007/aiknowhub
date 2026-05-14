@@ -10,8 +10,9 @@ export const useNotesStore = create<NotesState>()(
     searchTerm: '',
     searchType: "title",
     aiContent:'',
-    aiAction: '',
+    lastPromptAction: '',
     isDarkTheme: false,
+    lastPromptContent: '',
     addNote: () => {
         const newNote = {
             id: Date.now(),
@@ -23,11 +24,11 @@ export const useNotesStore = create<NotesState>()(
             activeNote: newNote
         }))
     },
-    // addToSelected : (notes: Note[]) => {
-    //     set(() => ({
-    //         selectedNotes : notes
-    //     }))
-    // },
+    setPromptContent: (content: string) => {
+        set(() => ({
+            lastPromptContent : content
+        }))
+    },
     setSearchTerm: (searchKey: string) => {
         set(() => ({
             searchTerm : searchKey
@@ -43,9 +44,9 @@ export const useNotesStore = create<NotesState>()(
             aiContent : aiContent 
         }))
     },
-    setAIAction: (action: string) => {
+    setLastPromptAction: (action: string) => {
         set(() => ({
-            aiAction : action 
+            lastPromptAction : action 
         }))
     },
     setTheme: (isDark: boolean) => set({

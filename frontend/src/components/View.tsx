@@ -38,7 +38,7 @@ const ViewNotes = () => {
     }
   }
 
-  function onBlurEdits(_event: React.FocusEvent<HTMLInputElement>) {
+  function onBlurEdits() {
     updateNoteTitle(isEditingId, title);
     setIsEditingId(-1);
     setTitle("");
@@ -64,7 +64,7 @@ const ViewNotes = () => {
         {filteredNotes.map((note: Note) => (
           <div
             key={note?.id}
-            className="flex flex-col gap-2  items-center justify-center cursor-pointer hover:border hover:border-slate-800"
+            className="flex flex-col gap-2 h-fit p-4 items-center justify-start cursor-pointer hover:border hover:border-slate-800"
           >
             <DocumentTextIcon
               className="w-8 h-8 text-blue-500"
