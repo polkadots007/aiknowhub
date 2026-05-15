@@ -9,22 +9,16 @@ import SearchBar from "./Search";
 import { Spinner } from "./Reusable/Spinner";
 import { toast } from "sonner";
 import { Toggle } from "./Reusable/Toggle";
+import { useAI } from "./hooks/useAI";
 
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
   const deleteNote = useNotesStore((state: NotesState) => state.deleteNote);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openAIModal, setOpenAIModal] = useState<boolean>(false);
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const { isLoading, generateAI } = useAI();
 
-  const {
-    activeNote,
-    isDarkTheme,
-    setAIContent,
-    setLastPromptAction,
-    setTheme,
-    setPromptContent,
-  } = useNotesStore();
+  const { activeNote, isDarkTheme, setTheme } = useNotesStore();
   const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
 
   function onConfirm() {
@@ -35,33 +29,15 @@ const Header = () => {
     setOpenModal(false);
   }
   async function onConfirmAIModal(action: string) {
-    setLoading(true);
-    setLastPromptAction(action);
-    if (activeNote) setPromptContent(activeNote.content);
     try {
-      const response = await fetch("http://localhost:3000/notes/ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: action,
-          content: activeNote?.content,
-        }),
-      });
-      const fetchedRes = await response.json();
-      console.log("fetched", fetchedRes.content);
-      setAIContent(fetchedRes.content);
-      toast.success("Generated Content for saved changes in Note", {
-        duration: 2000,
-      });
+      if (activeNote) await generateAI(action, activeNote.content);
+      else throw new Error("Invalid Note");
     } catch (error) {
       console.error(error);
       toast.error("Failed to generat content", {
         duration: 2000,
       });
     } finally {
-      setLoading(false);
       setOpenAIModal(false);
     }
   }

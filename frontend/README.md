@@ -157,3 +157,103 @@ no active note
 🔥 Auto-focus
 new note → focus editor
 👉 tiny detail, big feel
+
+Split Editor into Editor and AIResponsePanel.tsx
+fetch logic in services folder - /hooks/useAI.ts
+Your Zustand store already holds:
+
+notes
+AI
+theme
+selection
+search
+
+Still manageable.
+
+But eventually split:
+
+notes store
+UI store
+AI store
+
+Priority 3 — Keyboard shortcuts
+
+This would make app feel MUCH more premium.
+
+Examples:
+
+Ctrl+N → new note
+Ctrl+S → manual sync
+Ctrl+B → markdown bold
+Esc → close AI panel
+
+Very portfolio-worthy.
+
+🏅 Priority 4 — Better note metadata
+
+Add:
+
+createdAt
+updatedAt
+word count
+reading time
+
+This makes UI feel mature instantly.
+
+🏅 Priority 5 — Note folders/tags
+
+This would level project up significantly.
+
+Even basic:
+
+tags: ["react", "ai"]
+
+adds a lot.
+
+🏅 Priority 6 — AI chat mode
+
+THIS would become killer portfolio material.
+
+Instead of:
+
+single-shot actions
+
+add:
+
+chat with note
+
+Example:
+
+"Explain this paragraph"
+"Turn into interview questions"
+"Convert to flashcards"
+
+Now app becomes:
+
+AI knowledge workspace
+
+not just notes app.
+
+🏅 Priority 7 — Backend persistence
+
+Right now likely local-first.
+
+Next level:
+
+Supabase
+Firebase
+PostgreSQL
+auth
+
+Then this becomes deployable SaaS-style app.
+
+🎯 What would impress recruiters most next?
+
+Probably ONE of these:
+
+AI chat with notes
+tags/folders/search
+collaborative editing
+cloud sync
+command palette
+markdown live preview split pane

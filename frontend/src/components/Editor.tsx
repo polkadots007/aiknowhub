@@ -1,21 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNotesStore } from "../store/useNotesStore";
-import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
-import { ActionDropdown } from "./Reusable/Dropdown";
 import { Spinner } from "./Reusable/Spinner";
+import AIResponsePanel from "./AIResponsePanel";
+import { useAI } from "./hooks/useAI";
 
 const Editor = () => {
-  const {
-    updateNote,
-    activeNote,
-    aiContent,
-    lastPromptAction,
-    setAIContent,
-    setActiveNote,
-    lastPromptContent,
-  } = useNotesStore();
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const { updateNote, activeNote, aiContent, setActiveNote } = useNotesStore();
+  const { isLoading, retryAI } = useAI();
   const [title, setTitle] = useState<string>(activeNote?.title ?? "");
   const [content, setContent] = useState<string>(activeNote?.content ?? "");
 
@@ -39,35 +31,7 @@ const Editor = () => {
     }
   }
 
-  async function retryAction() {
-    setLoading(true);
-    try {
-      const response = await fetch("http://localhost:3000/notes/ai", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: lastPromptAction,
-          content: lastPromptContent,
-        }),
-      });
-      const fetchedRes = await response.json();
-      console.log("fetched", fetchedRes.content);
-      setAIContent(fetchedRes.content);
-      toast.success("Generated Content", {
-        duration: 2000,
-      });
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed generating response", {
-        duration: 2000,
-      });
-    } finally {
-      setLoading(false);
-    }
-  }
-  function saveSelection(action: string) {
+  async function saveSelection(action: string) {
     const selected = action.toLocaleLowerCase();
     if (selected === "replace") {
       setContent(aiContent);
@@ -76,13 +40,13 @@ const Editor = () => {
     } else if (selected === "copy") {
       handleCopy(aiContent);
     } else if (selected === "retry") {
-      retryAction();
+      await retryAI();
     } else {
       //pass
     }
   }
 
-  function updateNotes(content: string, title: string) {
+  function syncDraft(content: string, title: string) {
     if (activeNote?.id) {
       updateNote({
         id: activeNote.id,
@@ -98,17 +62,10 @@ const Editor = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (activeNote) updateNotes(content, activeNote.title);
+      if (activeNote) syncDraft(content, title);
     }, 300);
     return () => clearTimeout(timer);
-  }, [content]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (activeNote) updateNotes(activeNote.content, title);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [title]);
+  }, [title, content, activeNote?.id]);
 
   useEffect(() => {
     setTitle(activeNote?.title ?? "");
@@ -143,25 +100,7 @@ const Editor = () => {
         />
       </div>
       {aiContent.length > 0 && (
-        <div className="w-[25dvw] border-1 border-blue-600 px-3 py-1">
-          <div className="flex items-center gap-2">
-            <h2 className="border-b py-5">AI Generated Response</h2>
-            <div className="ml-auto">
-              <ActionDropdown
-                values={[
-                  { key: "replace", val: "Replace Note" },
-                  { key: "append", val: "Append" },
-                  { key: "copy", val: "Copy" },
-                  { key: "retry", val: "Retry" },
-                ]}
-                onSelect={saveSelection}
-              />
-            </div>
-          </div>
-          <div className="w-full h-[75dvh] border-gray-500 border-2 p-4 my-4 break-words overflow-y-auto">
-            <ReactMarkdown>{aiContent}</ReactMarkdown>
-          </div>
-        </div>
+        <AIResponsePanel content={aiContent} saveSelection={saveSelection} />
       )}
       {isLoading && <Spinner />}
     </div>
