@@ -35,6 +35,7 @@ const SearchBar = () => {
         values={[
           { key: "Title", val: "title" },
           { key: "Content", val: "content" },
+          { key: "Tags", val: "tags" },
         ]}
         onSelect={onSelect}
       />

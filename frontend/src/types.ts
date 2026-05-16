@@ -2,10 +2,13 @@ export interface Note {
     id: number;
     title: string;
     content: string;
+    createdAt: number,
+    updatedAt: number,
+     tags: string[];
 }
 
 
-export type SearchTypeProp = "title" | "content"
+export type SearchTypeProp = "title" | "content" | "tags"
 
 export interface NotesState {
     notes: Array<Note>,
@@ -16,6 +19,7 @@ export interface NotesState {
     searchType: SearchTypeProp,
     isDarkTheme: boolean,
     lastPromptContent: string,
+    setTags: (updatedNoteId: number, content: string) => void,
     setTheme: (isDark: boolean) => void,
     setSearchTerm: (searchKey : string) => void,
     setAIContent: (aiContent : string) => void,

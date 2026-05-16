@@ -3,11 +3,11 @@ import { useNotesStore } from "../store/useNotesStore";
 import { toast } from "sonner";
 import { Spinner } from "./Reusable/Spinner";
 import AIResponsePanel from "./AIResponsePanel";
-import { useAI } from "./hooks/useAI";
+import { useAI } from "../hooks/useAI";
 
 const Editor = () => {
   const { updateNote, activeNote, aiContent, setActiveNote } = useNotesStore();
-  const { isLoading, retryAI } = useAI();
+  const { isLoading, retryAI, generateTags } = useAI();
   const [title, setTitle] = useState<string>(activeNote?.title ?? "");
   const [content, setContent] = useState<string>(activeNote?.content ?? "");
 
@@ -46,12 +46,15 @@ const Editor = () => {
     }
   }
 
-  function syncDraft(content: string, title: string) {
+  function syncDraft(content: string, title: string, tags: string) {
     if (activeNote?.id) {
       updateNote({
         id: activeNote.id,
         title: title,
         content: content,
+        createdAt: activeNote.createdAt,
+        updatedAt: Date.now(),
+        tags: tags.split(","),
       });
     }
   }
@@ -61,8 +64,11 @@ const Editor = () => {
   }
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (activeNote) syncDraft(content, title);
+    const timer = setTimeout(async () => {
+      if (activeNote) {
+        const tags = await generateTags(activeNote?.id, content);
+        syncDraft(content, title, tags);
+      }
     }, 300);
     return () => clearTimeout(timer);
   }, [title, content, activeNote?.id]);
@@ -71,6 +77,25 @@ const Editor = () => {
     setTitle(activeNote?.title ?? "");
     setContent(activeNote?.content ?? "");
   }, [activeNote?.id]);
+
+  useEffect(() => {
+    async function handleKeyDown(event: KeyboardEvent) {
+      if (event.ctrlKey && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+
+        if (activeNote) {
+          const tags = await generateTags(activeNote?.id, content);
+          syncDraft(content, title, tags);
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div className="flex flex-row gap-2 justify-center items-start">

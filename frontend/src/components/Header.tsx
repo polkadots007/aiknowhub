@@ -9,7 +9,7 @@ import SearchBar from "./Search";
 import { Spinner } from "./Reusable/Spinner";
 import { toast } from "sonner";
 import { Toggle } from "./Reusable/Toggle";
-import { useAI } from "./hooks/useAI";
+import { useAI } from "../hooks/useAI";
 
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
@@ -59,6 +59,22 @@ const Header = () => {
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDarkTheme);
   }, [isDarkTheme]);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.ctrlKey && event.key.toLowerCase() === "n") {
+        event.preventDefault();
+
+        addNote();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <div>

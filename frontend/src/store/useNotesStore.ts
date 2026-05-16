@@ -17,13 +17,19 @@ export const useNotesStore = create<NotesState>()(
         const newNote = {
             id: Date.now(),
             title: "Untitled",
-            content: ""
+            content: "",
+            createdAt: Date.now(),
+            updatedAt: -1,
+            tags: []
         }
         set((state) => ({
             notes: [newNote, ...state.notes],
             activeNote: newNote
         }))
     },
+    setTags: (updatedNoteId: number, tags: string[]) => set((state) => ({
+        notes: state.notes.map((note) => note.id === updatedNoteId? { ...note, tags: tags} : note),
+    })),
     setPromptContent: (content: string) => {
         set(() => ({
             lastPromptContent : content
@@ -58,11 +64,11 @@ export const useNotesStore = create<NotesState>()(
         activeNote: updatedNote
     })),
     updateTitle: (updatedNoteId: number, updatedTitle: string) => set((state) => ({
-        notes: state.notes.map((note) => note.id === updatedNoteId? {id: note.id, title: updatedTitle, content: note.content}: note),
+        notes: state.notes.map((note) => note.id === updatedNoteId? {...note, title: updatedTitle}: note),
     })),
     deleteNote: (id: number) => set((state) => ({
         notes: state.notes.filter((note: Note) => note.id !== id),
-        activeNote: null
+        activeNote: state.activeNote?.id === id ? null : state.activeNote
     }))
 }),{
     name: "notes-storage",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { useNotesStore } from "../../store/useNotesStore";
+import { useNotesStore } from "../store/useNotesStore";
 
 export function useAI(){
     const {
@@ -11,7 +11,7 @@ export function useAI(){
         setAIContent,
         lastPromptContent,
         setLastPromptAction,
-        setPromptContent
+        setPromptContent,
       } = useNotesStore();
   const [isLoading, setLoading] = useState<boolean>(false);
   
@@ -47,6 +47,27 @@ async function generateAI(action: string, content: string, re?: boolean) {
     }
   }
 
+  async function generateTags(id: number, content: string) {
+    try {
+      const response = await fetch("http://localhost:3000/notes/ai/tags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: content,
+        }),
+      });
+      const fetchedRes = await response.json();
+      return fetchedRes.tags;
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed generating response", {
+        duration: 2000,
+      });
+    }
+  }
+
   async function retryAI(){
     await generateAI(
         lastPromptAction,
@@ -57,6 +78,7 @@ async function generateAI(action: string, content: string, re?: boolean) {
     return {
         retryAI,
         isLoading,
-        generateAI
+        generateAI,
+        generateTags
     }
 }
