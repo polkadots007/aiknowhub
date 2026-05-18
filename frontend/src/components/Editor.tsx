@@ -94,11 +94,6 @@ const Editor = () => {
   }, [content, title, activeNote?.id]);
 
   useEffect(() => {
-    setTitle(activeNote?.title ?? "");
-    setContent(activeNote?.content ?? "");
-  }, [activeNote?.id]);
-
-  useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
@@ -109,6 +104,7 @@ const Editor = () => {
   return (
     <div className="flex flex-row gap-2 justify-center items-start">
       <TagsPanel
+        key={activeNote?.id}
         noteId={activeNote?.id ?? -1}
         content={activeNote?.content || ""}
         tags={activeNote?.tags || []}

@@ -8,7 +8,11 @@ const Notes = () => {
   return (
     <div className="dark:bg-[#16171d]">
       <Header />
-      {activeNote && activeNote.id ? <Editor /> : <ViewNotes />}
+      {activeNote && activeNote.id ? (
+        <Editor key={activeNote.id} />
+      ) : (
+        <ViewNotes />
+      )}
     </div>
   );
 };

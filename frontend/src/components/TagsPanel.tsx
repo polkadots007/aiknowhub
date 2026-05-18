@@ -40,9 +40,6 @@ const TagsPanel = ({ noteId, content, tags }: TagsPanelProps) => {
     return () => clearTimeout(timer);
   }, [tagsInput, noteId, tags, setTags]);
 
-  useEffect(() => {
-    setTagsInput(tags.join(", "));
-  }, [noteId]);
   return (
     <div className="w-[20dvw] px-3 py-1">
       <div className="flex justify-between items-center gap-2">
