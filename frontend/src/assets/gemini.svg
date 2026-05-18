@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <!-- Gemini Gradient Definition -->
+    <linearGradient id="geminiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A80F0" />
+      <stop offset="40%" stop-color="#8B5CF6" />
+      <stop offset="70%" stop-color="#EC4899" />
+      <stop offset="100%" stop-color="#FBBF24" />
+    </linearGradient>
+  </defs>
+  <!-- The Four-Point Sparkle Path -->
+  <path 
+    d="M 50 0 
+       C 50 35, 65 50, 100 50 
+       C 65 50, 50 65, 50 100 
+       C 50 65, 35 50, 0 50 
+       C 35 50, 50 35, 50 0 Z" 
+    fill="url(#geminiGradient)" 
+  />
+</svg>

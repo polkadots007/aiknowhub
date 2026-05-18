@@ -1,13 +1,11 @@
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Logo } from "./Reusable/Icons";
-import { BoltIcon } from "@heroicons/react/24/outline";
 import { useNotesStore } from "../store/useNotesStore";
 import type { NotesState } from "../types";
 import { useEffect, useState } from "react";
-import { AIModal, ConfirmationModal } from "./Reusable/Modal";
+import { ConfirmationModal } from "./Reusable/Modal";
 import SearchBar from "./Search";
 import { Spinner } from "./Reusable/Spinner";
-import { toast } from "sonner";
 import { Toggle } from "./Reusable/Toggle";
 import { useAI } from "../hooks/useAI";
 
@@ -18,8 +16,7 @@ const Header = () => {
   const isDarkTheme = useNotesStore((state: NotesState) => state.isDarkTheme);
   const setTheme = useNotesStore((state: NotesState) => state.setTheme);
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [openAIModal, setOpenAIModal] = useState<boolean>(false);
-  const { isLoading, generateAI } = useAI();
+  const { isLoading } = useAI();
 
   const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
 
@@ -29,22 +26,6 @@ const Header = () => {
   }
   function onCancel() {
     setOpenModal(false);
-  }
-  async function onConfirmAIModal(action: string) {
-    try {
-      if (activeNote) await generateAI(action, activeNote.content);
-      else throw new Error("Invalid Note");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to generat content", {
-        duration: 2000,
-      });
-    } finally {
-      setOpenAIModal(false);
-    }
-  }
-  function onCancelAIModal() {
-    setOpenAIModal(false);
   }
   function handleToggle() {
     setDarkMode((prev: boolean) => {
@@ -97,22 +78,13 @@ const Header = () => {
                 New Note
               </button>
               {activeNote && (
-                <>
-                  <button
-                    className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
-                    onClick={() => setOpenAIModal(true)}
-                  >
-                    <BoltIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
-                    AI
-                  </button>
-                  <button
-                    className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
-                    onClick={() => setOpenModal(true)}
-                  >
-                    <TrashIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
-                    Delete
-                  </button>
-                </>
+                <button
+                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
+                  onClick={() => setOpenModal(true)}
+                >
+                  <TrashIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                  Delete
+                </button>
               )}
               <Toggle toggled={isDarkMode} setToggle={handleToggle} />
             </div>
@@ -125,13 +97,6 @@ const Header = () => {
           onConfirm={onConfirm}
           onCancel={onCancel}
           title={activeNote?.title || "Note"}
-        />
-      )}
-      {openAIModal && (
-        <AIModal
-          open={openAIModal}
-          onConfirm={onConfirmAIModal}
-          onClose={onCancelAIModal}
         />
       )}
       {isLoading && <Spinner />}

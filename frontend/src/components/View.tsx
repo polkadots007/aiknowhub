@@ -2,7 +2,7 @@ import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useNotesStore } from "../store/useNotesStore";
 import type { Note } from "../types";
 import { useMemo, useState } from "react";
-type SearchType = "title" | "content";
+type SearchType = "title" | "content" | "tags";
 
 const ViewNotes = () => {
   const notes = useNotesStore((state) => state.notes);
@@ -49,9 +49,17 @@ const ViewNotes = () => {
   }
   const filteredNotes = useMemo(() => {
     if (searchTerm && searchTerm.length) {
-      return notes.filter((note) =>
-        note[searchType].toLowerCase().includes(searchTerm.toLowerCase()),
-      );
+      if (searchType !== "tags") {
+        return notes.filter((note) =>
+          note[searchType].toLowerCase().includes(searchTerm.toLowerCase()),
+        );
+      } else
+        return notes.filter((note) =>
+          note[searchType]
+            ?.join(", ")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()),
+        );
     }
     return notes;
   }, [notes, searchTerm, searchType]);

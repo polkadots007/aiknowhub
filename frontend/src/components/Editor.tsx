@@ -11,6 +11,9 @@ const Editor = () => {
   const updateNote = useNotesStore((state: NotesState) => state.updateNote);
   const activeNote = useNotesStore((state: NotesState) => state.activeNote);
   const aiContent = useNotesStore((state: NotesState) => state.aiContent);
+  const searchTerm = useNotesStore((state) => state.searchTerm);
+  const setSearchTerm = useNotesStore((state) => state.setSearchTerm);
+
   const setActiveNote = useNotesStore(
     (state: NotesState) => state.setActiveNote,
   );
@@ -92,6 +95,9 @@ const Editor = () => {
     }, 3000);
     return () => clearTimeout(timer);
   }, [content, title, activeNote?.id]);
+  useEffect(() => {
+    if (searchTerm) setSearchTerm("");
+  }, []);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
@@ -134,9 +140,10 @@ const Editor = () => {
           onChange={onContentChange}
         />
       </div>
-      {aiContent.length > 0 && (
-        <AIResponsePanel content={aiContent} saveSelection={saveSelection} />
-      )}
+      <AIResponsePanel
+        content={activeNote?.content}
+        saveSelection={saveSelection}
+      />
       {isLoading && <Spinner />}
     </div>
   );
