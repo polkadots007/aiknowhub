@@ -14,11 +14,13 @@ import { useAI } from "../hooks/useAI";
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
   const deleteNote = useNotesStore((state: NotesState) => state.deleteNote);
+  const activeNote = useNotesStore((state: NotesState) => state.activeNote);
+  const isDarkTheme = useNotesStore((state: NotesState) => state.isDarkTheme);
+  const setTheme = useNotesStore((state: NotesState) => state.setTheme);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openAIModal, setOpenAIModal] = useState<boolean>(false);
   const { isLoading, generateAI } = useAI();
 
-  const { activeNote, isDarkTheme, setTheme } = useNotesStore();
   const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
 
   function onConfirm() {

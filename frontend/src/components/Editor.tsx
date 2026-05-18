@@ -1,22 +1,31 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNotesStore } from "../store/useNotesStore";
 import { toast } from "sonner";
 import { Spinner } from "./Reusable/Spinner";
 import AIResponsePanel from "./AIResponsePanel";
 import { useAI } from "../hooks/useAI";
 import TagsPanel from "./TagsPanel";
+import type { NotesState } from "../types";
 
 const Editor = () => {
-  const { updateNote, activeNote, aiContent, setActiveNote } = useNotesStore();
-  const { isLoading, retryAI, generateTags } = useAI();
+  const updateNote = useNotesStore((state: NotesState) => state.updateNote);
+  const activeNote = useNotesStore((state: NotesState) => state.activeNote);
+  const aiContent = useNotesStore((state: NotesState) => state.aiContent);
+  const setActiveNote = useNotesStore(
+    (state: NotesState) => state.setActiveNote,
+  );
+  const { isLoading, retryAI } = useAI();
   const [title, setTitle] = useState<string>(activeNote?.title ?? "");
   const [content, setContent] = useState<string>(activeNote?.content ?? "");
+  const [isDirty, setIsDirty] = useState<boolean>(false);
 
   function onTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setTitle(event.target.value);
+    setIsDirty(true);
   }
   function onContentChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setContent(event.target.value);
+    setIsDirty(true);
   }
   async function handleCopy(content: string) {
     try {
@@ -47,34 +56,42 @@ const Editor = () => {
     }
   }
 
-  function syncDraft(content: string, title: string, tags: string) {
-    console.log("tags", tags);
-    if (activeNote?.id) {
+  function syncDraft(content: string, title: string) {
+    console.log("null check", content, title);
+    if (activeNote?.id && isDirty) {
       updateNote({
-        id: activeNote.id,
+        ...activeNote,
         title: title,
         content: content,
-        createdAt: activeNote.createdAt,
         updatedAt: Date.now(),
-        tags: [...new Set(...activeNote.tags, ...(tags?.split(",") ?? ""))],
       });
+      setIsDirty(false);
     }
   }
 
   function closeEditor() {
     setActiveNote(null);
   }
+  const handleKeyDown = useCallback(
+    async (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key.toLowerCase() === "s") {
+        event.preventDefault();
 
+        if (activeNote && isDirty) {
+          syncDraft(content, title);
+        }
+      }
+    },
+    [activeNote, content, title, isDirty],
+  );
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (activeNote) {
-        const tags = await generateTags(activeNote?.id, content);
-        console.log("tags", tags);
-        syncDraft(content, title, tags);
+      if (activeNote && isDirty) {
+        syncDraft(content, title);
       }
-    }, 300);
+    }, 3000);
     return () => clearTimeout(timer);
-  }, [title, content, activeNote?.id]);
+  }, [content, title, activeNote?.id]);
 
   useEffect(() => {
     setTitle(activeNote?.title ?? "");
@@ -82,27 +99,20 @@ const Editor = () => {
   }, [activeNote?.id]);
 
   useEffect(() => {
-    async function handleKeyDown(event: KeyboardEvent) {
-      if (event.ctrlKey && event.key.toLowerCase() === "s") {
-        event.preventDefault();
-
-        if (activeNote) {
-          const tags = await generateTags(activeNote?.id, content);
-          syncDraft(content, title, tags);
-        }
-      }
-    }
-
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleKeyDown]);
 
   return (
     <div className="flex flex-row gap-2 justify-center items-start">
-      <TagsPanel noteId={activeNote?.id ?? -1} tags={activeNote?.tags || []} />
+      <TagsPanel
+        noteId={activeNote?.id ?? -1}
+        content={activeNote?.content || ""}
+        tags={activeNote?.tags || []}
+      />
       <div className="w-[60dvw]">
         <div className="flex pt-2">
           <div className="flex-1 mr-2 font-semibold text-2xl text-blue-500 text-left">

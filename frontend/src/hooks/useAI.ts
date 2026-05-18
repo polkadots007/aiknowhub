@@ -5,14 +5,27 @@ import { toast } from "sonner";
 import { useNotesStore } from "../store/useNotesStore";
 
 export function useAI(){
-    const {
-        activeNote,
-        lastPromptAction,
-        setAIContent,
-        lastPromptContent,
-        setLastPromptAction,
-        setPromptContent,
-      } = useNotesStore();
+const activeNote = useNotesStore((state) => state.activeNote);
+
+const lastPromptAction = useNotesStore(
+  (state) => state.lastPromptAction
+);
+
+const lastPromptContent = useNotesStore(
+  (state) => state.lastPromptContent
+);
+
+const setAIContent = useNotesStore(
+  (state) => state.setAIContent
+);
+
+const setLastPromptAction = useNotesStore(
+  (state) => state.setLastPromptAction
+);
+
+const setPromptContent = useNotesStore(
+  (state) => state.setPromptContent
+);
   const [isLoading, setLoading] = useState<boolean>(false);
   
 async function generateAI(action: string, content: string, re?: boolean) {
