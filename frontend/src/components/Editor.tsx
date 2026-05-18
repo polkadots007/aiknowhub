@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Spinner } from "./Reusable/Spinner";
 import AIResponsePanel from "./AIResponsePanel";
 import { useAI } from "../hooks/useAI";
+import TagsPanel from "./TagsPanel";
 
 const Editor = () => {
   const { updateNote, activeNote, aiContent, setActiveNote } = useNotesStore();
@@ -47,6 +48,7 @@ const Editor = () => {
   }
 
   function syncDraft(content: string, title: string, tags: string) {
+    console.log("tags", tags);
     if (activeNote?.id) {
       updateNote({
         id: activeNote.id,
@@ -54,7 +56,7 @@ const Editor = () => {
         content: content,
         createdAt: activeNote.createdAt,
         updatedAt: Date.now(),
-        tags: tags.split(","),
+        tags: [...new Set(...activeNote.tags, ...(tags?.split(",") ?? ""))],
       });
     }
   }
@@ -67,6 +69,7 @@ const Editor = () => {
     const timer = setTimeout(async () => {
       if (activeNote) {
         const tags = await generateTags(activeNote?.id, content);
+        console.log("tags", tags);
         syncDraft(content, title, tags);
       }
     }, 300);
@@ -99,7 +102,8 @@ const Editor = () => {
 
   return (
     <div className="flex flex-row gap-2 justify-center items-start">
-      <div className="w-[70dvw]">
+      <TagsPanel noteId={activeNote?.id ?? -1} tags={activeNote?.tags || []} />
+      <div className="w-[60dvw]">
         <div className="flex pt-2">
           <div className="flex-1 mr-2 font-semibold text-2xl text-blue-500 text-left">
             <input value={title} onChange={onTitleChange} className="w-full" />

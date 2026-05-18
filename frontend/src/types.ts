@@ -19,7 +19,7 @@ export interface NotesState {
     searchType: SearchTypeProp,
     isDarkTheme: boolean,
     lastPromptContent: string,
-    setTags: (updatedNoteId: number, content: string) => void,
+    setTags: (updatedNoteId: number, tags: string[]) => void,
     setTheme: (isDark: boolean) => void,
     setSearchTerm: (searchKey : string) => void,
     setAIContent: (aiContent : string) => void,
