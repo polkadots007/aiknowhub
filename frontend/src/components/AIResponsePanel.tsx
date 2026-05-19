@@ -133,6 +133,11 @@ const AIResponsePanel = ({ content, saveSelection }: AIPanelProps) => {
           value={prompt}
           placeholder="Ask AI about this note..."
           onChange={onPromptChange}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              askAI(prompt, content);
+            }
+          }}
         />
 
         <button

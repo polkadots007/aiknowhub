@@ -1,3 +1,4 @@
+
 export function isAbortError(error: unknown): boolean {
   return (
     typeof error === "object" &&
@@ -6,3 +7,5 @@ export function isAbortError(error: unknown): boolean {
     error.name === "AbortError"
   );
 }
+
+

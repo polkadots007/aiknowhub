@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useNotesStore } from "../store/useNotesStore";
-import { isAbortError } from "../components/helper";
 
 export function useAI(){
 const activeNote = useNotesStore((state) => state.activeNote);

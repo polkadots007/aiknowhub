@@ -33,3 +33,17 @@ export interface NotesState {
     deleteNote: (id: number) => void
 
 }
+
+export interface ChatState{
+    chatHistory: ChatMessage[],
+    addToChatHistory: (chatMsg: ChatMessage) => void,
+    deleteChat: (deletedNoteId: number) => void,
+    clearChatForNote: (noteId: number) => void
+    clearChat: () => void,
+}
+export interface ChatMessage {
+  id: number;
+  noteId: number;
+  role: "user" | "assistant";
+  content: string;
+};
