@@ -1,34 +1,86 @@
 import ReactMarkdown from "react-markdown";
 import { ActionDropdown } from "./Reusable/Dropdown";
-import { useMemo, useState } from "react";
-import { ArrowUpIcon } from "@heroicons/react/24/outline";
+import { useMemo, useRef, useState } from "react";
+import { ArrowUpIcon, StopIcon } from "@heroicons/react/24/outline";
 import { useAI } from "../hooks/useAI";
 import { toast } from "sonner";
 import type { NotesState } from "../types";
 import { useNotesStore } from "../store/useNotesStore";
 import geminiLogo from "../../src/assets/gemini.svg";
+import { isAbortError } from "./helper";
 
 type AIPanelProps = {
   content: string;
-  saveSelection: (action: string) => void;
+  saveSelection: (action: string, signal?: AbortSignal) => void;
 };
 
 const AIResponsePanel = ({ content, saveSelection }: AIPanelProps) => {
   const aiContent = useNotesStore((state: NotesState) => state.aiContent);
   const [prompt, setPrompt] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const geminiResponse = useMemo(() => aiContent, [aiContent]);
-  const { generateAI } = useAI();
+  const controllerRef = useRef<AbortController | null>(null);
+  const { generateAI, isLoading } = useAI();
   function onPromptChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setPrompt(event.target.value);
   }
-  async function askAI(prompt: string, content: string) {
+
+  function onSelectAction(action: string) {
     try {
-      await generateAI(prompt, content);
+      const controller = new AbortController();
+
+      controllerRef.current = controller;
+      if (action === "retry") setIsGenerating(true);
+      saveSelection(action, controller.signal);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to generate content", {
-        duration: 2000,
-      });
+      if (error instanceof Error && error.name !== "AbortError") {
+        toast.error("Retry failed", {
+          duration: 2000,
+        });
+      } else if (isAbortError(error)) {
+        toast.success("Stopped request", {
+          duration: 2000,
+        });
+      } else {
+        toast.error("Failed to generate content", {
+          duration: 2000,
+        });
+      }
+    } finally {
+      setIsGenerating(false);
+      controllerRef.current = null;
+    }
+  }
+  async function askAI(prompt: string, content: string) {
+    if (isGenerating) {
+      controllerRef.current?.abort();
+      controllerRef.current = null;
+      setIsGenerating(false);
+      return;
+    }
+    try {
+      setIsGenerating(true);
+      const controller = new AbortController();
+
+      controllerRef.current = controller;
+      await generateAI(prompt, content, false, controller.signal);
+    } catch (error) {
+      console.error(error);
+      if (isAbortError(error)) {
+        toast.success("Stopped request", {
+          duration: 2000,
+        });
+        return;
+      } else {
+        toast.error("Failed to generate content", {
+          duration: 2000,
+        });
+        return;
+      }
+    } finally {
+      setIsGenerating(false);
+      controllerRef.current = null;
     }
   }
   return (
@@ -46,12 +98,19 @@ const AIResponsePanel = ({ content, saveSelection }: AIPanelProps) => {
               { key: "copy", val: "Copy" },
               { key: "retry", val: "Retry" },
             ]}
-            onSelect={saveSelection}
+            onSelect={onSelectAction}
           />
         </div>
       </div>
-      <div className="w-full h-[66dvh] text-black dark:text-white border-gray-500 border-2 p-4 my-4 break-words overflow-y-auto">
-        <ReactMarkdown>{geminiResponse}</ReactMarkdown>
+      <div className="w-full h-[67dvh] text-black dark:text-white border-gray-500 border-2 p-4 my-4 break-words overflow-y-auto">
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-md text-gray-500">
+            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            Gemini is thinking...
+          </div>
+        ) : (
+          <ReactMarkdown>{geminiResponse}</ReactMarkdown>
+        )}
       </div>
       <div className="relative w-full">
         <textarea
@@ -95,7 +154,11 @@ const AIResponsePanel = ({ content, saveSelection }: AIPanelProps) => {
     "
           onClick={() => askAI(prompt, content)}
         >
-          <ArrowUpIcon className="w-5 h-5" />
+          {isGenerating ? (
+            <StopIcon className="w-6 h-6" />
+          ) : (
+            <ArrowUpIcon className="w-5 h-5" />
+          )}
         </button>
       </div>
     </div>

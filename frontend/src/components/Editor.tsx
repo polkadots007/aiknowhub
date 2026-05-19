@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNotesStore } from "../store/useNotesStore";
 import { toast } from "sonner";
-import { Spinner } from "./Reusable/Spinner";
 import AIResponsePanel from "./AIResponsePanel";
 import { useAI } from "../hooks/useAI";
 import TagsPanel from "./TagsPanel";
@@ -17,7 +16,7 @@ const Editor = () => {
   const setActiveNote = useNotesStore(
     (state: NotesState) => state.setActiveNote,
   );
-  const { isLoading, retryAI } = useAI();
+  const { retryAI } = useAI();
   const [title, setTitle] = useState<string>(activeNote?.title ?? "");
   const [content, setContent] = useState<string>(activeNote?.content ?? "");
   const [isDirty, setIsDirty] = useState<boolean>(false);
@@ -44,7 +43,7 @@ const Editor = () => {
     }
   }
 
-  async function saveSelection(action: string) {
+  async function saveSelection(action: string, signal?: AbortSignal) {
     const selected = action.toLocaleLowerCase();
     if (selected === "replace") {
       setContent(aiContent);
@@ -53,7 +52,7 @@ const Editor = () => {
     } else if (selected === "copy") {
       handleCopy(aiContent);
     } else if (selected === "retry") {
-      await retryAI();
+      await retryAI(signal);
     } else {
       //pass
     }
@@ -141,10 +140,9 @@ const Editor = () => {
         />
       </div>
       <AIResponsePanel
-        content={activeNote?.content}
+        content={activeNote?.content || ""}
         saveSelection={saveSelection}
       />
-      {isLoading && <Spinner />}
     </div>
   );
 };

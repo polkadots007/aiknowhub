@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useNotesStore } from "../store/useNotesStore";
+import { isAbortError } from "../components/helper";
 
 export function useAI(){
 const activeNote = useNotesStore((state) => state.activeNote);
@@ -28,7 +29,7 @@ const setPromptContent = useNotesStore(
 );
   const [isLoading, setLoading] = useState<boolean>(false);
   
-async function generateAI(action: string, content: string, re?: boolean) {
+async function generateAI(action: string, content: string, re?: boolean, signal?: AbortSignal) {
     setLoading(true);
     if(!re){
     setLastPromptAction(action);
@@ -44,18 +45,14 @@ async function generateAI(action: string, content: string, re?: boolean) {
           action: action,
           content: content,
         }),
+        signal
       });
       const fetchedRes = await response.json();
       setAIContent(fetchedRes.content);
       toast.success("Generated Content", {
         duration: 2000,
       });
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed generating response", {
-        duration: 2000,
-      });
-    } finally {
+    }  finally {
       setLoading(false);
     }
   }
@@ -81,11 +78,13 @@ async function generateAI(action: string, content: string, re?: boolean) {
     }
   }
 
-  async function retryAI(){
+  async function retryAI(signal?:AbortSignal){
     await generateAI(
         lastPromptAction,
         lastPromptContent,
-        true
+        true,
+        signal
+
     );
   }
     return {
