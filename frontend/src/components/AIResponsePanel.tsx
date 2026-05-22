@@ -114,10 +114,10 @@ const AIResponsePanel = ({ noteId, content, saveSelection }: AIPanelProps) => {
           {messages.map((msg: ChatMessage) => (
             <div
               key={msg.id}
-              className={`rounded-2xl p-3  text-white ${
+              className={`rounded-2xl p-3 ${
                 msg.role === "user"
-                  ? "max-w-[75%] ml-auto bg-blue-600"
-                  : "max-w-[90%] mr-auto bg-neutral-800"
+                  ? "max-w-[75%] ml-auto bg-blue-600 text-white"
+                  : "max-w-[90%] mr-auto bg-gray-200 text-gray-900 dark:bg-neutral-800 dark:text-white"
               } `}
             >
               <ReactMarkdown>{msg.content}</ReactMarkdown>

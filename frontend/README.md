@@ -131,3 +131,22 @@ persistent knowledge system
 cloud-synced AI notebook
 
 That’s a strong trajectory.
+
+🎯 Even better later
+
+Eventually you can make:
+
+flushDraft()
+
+inside a custom hook.
+
+Like:
+
+const { syncDraft, flushDraft } = useDraft();
+
+Where:
+
+autosave uses debounced sync
+close/save shortcuts use flush
+
+That’s proper editor architecture.
