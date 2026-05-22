@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { SearchTypeProp } from "../../types";
 
 type ItemProp = { key: string; val: SearchTypeProp };
-type ItemActionProp = { key: string; val: string };
+type ItemActionProp = { key: string; val: string; group: number };
 const Dropdown = ({
   values,
   onSelect,
@@ -73,7 +73,9 @@ const ActionDropdown = ({
   const [open, setOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const primaryActions = values.filter((item) => item.group === 1);
 
+  const secondaryActions = values.filter((item) => item.group === 2);
   function handleClick(item: ItemActionProp) {
     onSelect(item.key);
     setSelectedValue(item.key);
@@ -105,16 +107,28 @@ const ActionDropdown = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute z-999 right-0 mt-2 w-40 bg-white dark:bg-gray-900 border border-slate-700 rounded shadow-lg text-blue-600 dark:text-white">
-          {values.map((item: ItemActionProp, index: number) => (
-            <button
-              key={index}
-              className={`block w-full text-left px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer ${selectedValue === item.key && "bg-blue-600 text-white"}`}
-              onClick={() => handleClick(item)}
-            >
-              {selectedValue === item.key ? "✓ " + item.val : item.val}
-            </button>
-          ))}
+        <div className="absolute z-[999] right-0 mt-2 w-40 bg-white dark:bg-gray-900 border border-slate-700 rounded shadow-lg text-blue-600 dark:text-white">
+          <div className="py-1">
+            {primaryActions.map((item: ItemActionProp, index: number) => (
+              <button
+                key={index}
+                className={`block w-full text-left px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer ${selectedValue === item.key && "bg-blue-600 text-white"}`}
+                onMouseDown={async () => handleClick(item)}
+              >
+                {selectedValue === item.key ? "✓ " + item.val : item.val}
+              </button>
+            ))}
+            <div className="border-t border-gray-300 dark:border-gray-700 my-1" />
+            {secondaryActions.map((item: ItemActionProp, index: number) => (
+              <button
+                key={index}
+                className={`block w-full text-left px-4 py-2 hover:bg-blue-600 hover:text-white cursor-pointer ${selectedValue === item.key && "bg-blue-600 text-white"}`}
+                onClick={() => handleClick(item)}
+              >
+                {selectedValue === item.key ? "✓ " + item.val : item.val}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>

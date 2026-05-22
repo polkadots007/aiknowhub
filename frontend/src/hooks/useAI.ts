@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useNotesStore } from "../store/useNotesStore";
+import { useChatStore } from "../store/useChatStore";
 
 export function useAI(){
 const activeNote = useNotesStore((state) => state.activeNote);
+const addToChatHistory = useChatStore((state) => state.addToChatHistory);
 
 const lastPromptAction = useNotesStore(
   (state) => state.lastPromptAction
@@ -15,8 +17,8 @@ const lastPromptContent = useNotesStore(
   (state) => state.lastPromptContent
 );
 
-const setAIContent = useNotesStore(
-  (state) => state.setAIContent
+const setlatestAIResponse = useNotesStore(
+  (state) => state.setlatestAIResponse
 );
 
 const setLastPromptAction = useNotesStore(
@@ -34,6 +36,7 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
     setLastPromptAction(action);
     if (activeNote) setPromptContent(activeNote.content);
     }
+    if(!activeNote) throw new Error("Invalid Note");
     try {
       const response = await fetch("http://localhost:3000/notes/ai", {
         method: "POST",
@@ -47,7 +50,21 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
         signal
       });
       const fetchedRes = await response.json();
-      setAIContent(fetchedRes.content);
+      setlatestAIResponse(fetchedRes.content);
+      addToChatHistory([
+        {
+        id: crypto.randomUUID(),
+        noteId: activeNote.id,
+        role: "user",
+        content: action
+        
+      },{
+        id: crypto.randomUUID(),
+        noteId: activeNote.id ,
+        role: "assistant",
+        content: fetchedRes.content
+      }
+      ])
       toast.success("Generated Content", {
         duration: 2000,
       });

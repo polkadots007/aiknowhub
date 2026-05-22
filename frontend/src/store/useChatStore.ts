@@ -6,8 +6,8 @@ export const useChatStore = create<ChatState>()(
     persist(
         (set) => ({
     chatHistory: [],
-    addToChatHistory: (chatMsg: ChatMessage) => set((state) => ({
-        chatHistory: [...state.chatHistory, chatMsg]
+    addToChatHistory: (chatMsg: ChatMessage[]) => set((state) => ({
+        chatHistory: [...state.chatHistory, ...chatMsg]
     })),
     deleteChat: (deletedNoteId: number) => set((state) => ({
         chatHistory: state.chatHistory.filter(

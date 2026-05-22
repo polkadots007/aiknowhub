@@ -88,7 +88,7 @@ const AIResponsePanel = ({ noteId, content, saveSelection }: AIPanelProps) => {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
-  }, [messages, isGenerating]);
+  }, [messages]);
   return (
     <div className="w-[25dvw] border-1 border-blue-600 px-3 py-1">
       <div className="flex items-center gap-2">

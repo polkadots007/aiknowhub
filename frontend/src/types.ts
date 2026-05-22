@@ -13,7 +13,7 @@ export type SearchTypeProp = "title" | "content" | "tags"
 export interface NotesState {
     notes: Array<Note>,
     activeNote: null | Note,
-    aiContent: string,
+    latestAIResponse: string,
     lastPromptAction: string,
     searchTerm: string,
     searchType: SearchTypeProp,
@@ -22,7 +22,7 @@ export interface NotesState {
     setTags: (updatedNoteId: number, tags: string[]) => void,
     setTheme: (isDark: boolean) => void,
     setSearchTerm: (searchKey : string) => void,
-    setAIContent: (aiContent : string) => void,
+    setlatestAIResponse: (latestAIResponse : string) => void,
     setPromptContent: (content : string) => void,
     setLastPromptAction: (action : string) => void,
     setSearchType: (key : SearchTypeProp) => void,
@@ -36,13 +36,13 @@ export interface NotesState {
 
 export interface ChatState{
     chatHistory: ChatMessage[],
-    addToChatHistory: (chatMsg: ChatMessage) => void,
+    addToChatHistory: (chatMsg: ChatMessage[]) => void,
     deleteChat: (deletedNoteId: number) => void,
     clearChatForNote: (noteId: number) => void
     clearChat: () => void,
 }
 export interface ChatMessage {
-  id: number;
+  id: string;
   noteId: number;
   role: "user" | "assistant";
   content: string;

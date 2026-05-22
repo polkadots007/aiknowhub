@@ -18,7 +18,6 @@ const TagsPanel = ({ noteId, content, tags }: TagsPanelProps) => {
   async function generateAITags() {
     const tags = await generateTags(noteId, content);
     setTagsInput(tags.toLowerCase());
-    console.log("rs", tags, content);
     const newTags: string[] = tags
       .split(",")
       .map((t: string) => t.trim().toLowerCase())

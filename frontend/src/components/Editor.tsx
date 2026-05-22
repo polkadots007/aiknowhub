@@ -4,14 +4,20 @@ import { toast } from "sonner";
 import AIResponsePanel from "./AIResponsePanel";
 import { useAI } from "../hooks/useAI";
 import TagsPanel from "./TagsPanel";
-import type { NotesState } from "../types";
+import type { ChatState, NotesState } from "../types";
+import { useChatStore } from "../store/useChatStore";
+import { useChatForNote } from "../hooks/useChatForNote";
 
 const Editor = () => {
   const updateNote = useNotesStore((state: NotesState) => state.updateNote);
   const activeNote = useNotesStore((state: NotesState) => state.activeNote);
-  const aiContent = useNotesStore((state: NotesState) => state.aiContent);
+  const messages = useChatForNote(activeNote?.id || -1);
+
   const searchTerm = useNotesStore((state) => state.searchTerm);
   const setSearchTerm = useNotesStore((state) => state.setSearchTerm);
+  const clearChatForNote = useChatStore(
+    (state: ChatState) => state.clearChatForNote,
+  );
 
   const setActiveNote = useNotesStore(
     (state: NotesState) => state.setActiveNote,
@@ -36,30 +42,63 @@ const Editor = () => {
         duration: 2000,
       });
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to copy", {
-        duration: 2000,
-      });
+      try {
+        const textarea = document.createElement("textarea");
+
+        textarea.value = content;
+
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+
+        document.body.appendChild(textarea);
+
+        textarea.focus();
+        textarea.select();
+
+        const successful = document.execCommand("copy");
+
+        document.body.removeChild(textarea);
+
+        if (!successful) {
+          throw new Error("Fallback copy failed");
+        }
+
+        toast.success("Copied to clipboard", {
+          duration: 2000,
+        });
+      } catch (fallbackError) {
+        console.error(fallbackError);
+
+        toast.error("Failed to copy", {
+          duration: 2000,
+        });
+      }
     }
   }
 
   async function saveSelection(action: string, signal?: AbortSignal) {
-    const selected = action.toLocaleLowerCase();
+    if (!activeNote) return;
+    const selected = action.toLowerCase();
+    const latestAIResponse =
+      messages
+        .filter((m) => m.role === "assistant" && m.noteId === activeNote.id)
+        .at(-1)?.content ?? "";
     if (selected === "replace") {
-      setContent(aiContent);
+      setContent(latestAIResponse);
     } else if (selected === "append") {
-      setContent((prev: string) => prev + "\n" + aiContent);
+      setContent((prev: string) => prev + "\n" + latestAIResponse);
     } else if (selected === "copy") {
-      handleCopy(aiContent);
+      await handleCopy(latestAIResponse);
     } else if (selected === "retry") {
       await retryAI(signal);
+    } else if (selected === "clear") {
+      if (activeNote) clearChatForNote(activeNote.id);
     } else {
       //pass
     }
   }
 
   function syncDraft(content: string, title: string) {
-    console.log("null check", content, title);
     if (activeNote?.id && isDirty) {
       updateNote({
         ...activeNote,
@@ -72,11 +111,16 @@ const Editor = () => {
   }
 
   function closeEditor() {
+    if (isDirty) {
+      syncDraft(content, title);
+    }
+
     setActiveNote(null);
   }
   const handleKeyDown = useCallback(
     async (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.key.toLowerCase() === "s") {
+      const isModifier = event.ctrlKey || event.metaKey;
+      if (isModifier && event.key.toLowerCase() === "s") {
         event.preventDefault();
 
         if (activeNote && isDirty) {
@@ -139,10 +183,13 @@ const Editor = () => {
           onChange={onContentChange}
         />
       </div>
-      <AIResponsePanel
-        content={activeNote?.content || ""}
-        saveSelection={saveSelection}
-      />
+      {activeNote && (
+        <AIResponsePanel
+          noteId={activeNote.id}
+          content={activeNote.content}
+          saveSelection={saveSelection}
+        />
+      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ export const useNotesStore = create<NotesState>()(
     activeNote: null,
     searchTerm: '',
     searchType: "title",
-    aiContent:'',
+    latestAIResponse:'',
     lastPromptAction: '',
     isDarkTheme: false,
     lastPromptContent: '',
@@ -45,9 +45,9 @@ export const useNotesStore = create<NotesState>()(
             searchType : key 
         }))
     },
-    setAIContent: (aiContent: string) => {
+    setlatestAIResponse: (latestAIResponse: string) => {
         set(() => ({
-            aiContent : aiContent 
+            latestAIResponse : latestAIResponse 
         }))
     },
     setLastPromptAction: (action: string) => {
