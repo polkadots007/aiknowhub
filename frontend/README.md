@@ -150,3 +150,24 @@ autosave uses debounced sync
 close/save shortcuts use flush
 
 That’s proper editor architecture.
+🎯 3. Rollback on failure
+
+Danger of optimistic updates:
+
+What if server fails?
+
+Then:
+
+UI lies
+
+So you save previous state BEFORE optimistic update.
+
+Example mental model:
+
+const previousNotes = get().notes;
+
+Then if request fails:
+
+set({ notes: previousNotes })
+
+That is rollback.

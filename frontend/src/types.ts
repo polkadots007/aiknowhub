@@ -2,8 +2,8 @@ export interface Note {
     id: number;
     title: string;
     content: string;
-    createdAt: number,
-    updatedAt: number,
+    created_at: string,
+    updated_at: string,
      tags: string[];
 }
 
@@ -17,10 +17,10 @@ export interface NotesState {
     lastPromptAction: string,
     searchTerm: string,
     searchType: SearchTypeProp,
-    isDarkTheme: boolean,
     lastPromptContent: string,
+    isSaving: boolean,
+    loadNotes: () => void,
     setTags: (updatedNoteId: number, tags: string[]) => void,
-    setTheme: (isDark: boolean) => void,
     setSearchTerm: (searchKey : string) => void,
     setlatestAIResponse: (latestAIResponse : string) => void,
     setPromptContent: (content : string) => void,
@@ -34,16 +34,30 @@ export interface NotesState {
 
 }
 
+export interface ThemeState {
+    isDarkTheme: boolean,
+    setTheme: (isDark: boolean) => void,
+
+}
+
 export interface ChatState{
     chatHistory: ChatMessage[],
-    addToChatHistory: (chatMsg: ChatMessage[]) => void,
-    deleteChat: (deletedNoteId: number) => void,
+    loadChats: () => void,
+    addToChatHistory: (chatMsg: ChatInsertMsg[]) => void,
+    deleteChat: (deletedChatId: number) => void,
     clearChatForNote: (noteId: number) => void
     clearChat: () => void,
 }
 export interface ChatMessage {
-  id: string;
-  noteId: number;
+  id: number;
+  note_id: number;
   role: "user" | "assistant";
   content: string;
+  created_at: string;
 };
+
+export interface ChatInsertMsg {
+  note_id: number;
+  role: "user" | "assistant";
+  content: string;
+}

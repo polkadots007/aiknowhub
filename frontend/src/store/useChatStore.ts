@@ -1,28 +1,44 @@
 import { create } from 'zustand'
-import { persist } from "zustand/middleware"
-import { type ChatMessage, type ChatState } from '../types'
+import { type ChatInsertMsg, type ChatMessage, type ChatState } from '../types'
+import { supabase } from '../lib/supabase';
 
 export const useChatStore = create<ChatState>()(
-    persist(
         (set) => ({
     chatHistory: [],
-    addToChatHistory: (chatMsg: ChatMessage[]) => set((state) => ({
-        chatHistory: [...state.chatHistory, ...chatMsg]
-    })),
-    deleteChat: (deletedNoteId: number) => set((state) => ({
+    loadChats: async () => {
+      const { data, error } = await supabase.from("chats").select("*");
+    if(error) throw error;
+    set({
+        chatHistory: data
+    })
+    },
+    addToChatHistory: async (chatMsg: ChatInsertMsg[]) => {
+        const { data, error } = await supabase
+              .from("chats")
+              .insert(chatMsg)
+              .select();
+            if (error) throw error;
+        set((state) => ({
+        chatHistory: [...state.chatHistory, ...data]
+    }))
+    },
+    deleteChat: async (deletedChatId: number) => {
+    const { error } = await supabase.from("chats").delete().eq("id", deletedChatId);
+    if (error) throw error;
+        set((state) => ({
         chatHistory: state.chatHistory.filter(
-    (msg) => msg.noteId !== deletedNoteId
+    (msg) => msg.id !== deletedChatId
     )
-    })),
-    clearChatForNote: (noteId: number) => set((state) => ({
-      chatHistory: state.chatHistory.filter((chat: ChatMessage) => chat.noteId !== noteId)  
-    })),
+    }))
+    },
+    clearChatForNote: async (noteId: number) => {
+    const { error } = await supabase.from("chats").delete().eq("note_id", noteId);
+    if (error) throw error;
+    set((state) => ({
+      chatHistory: state.chatHistory.filter((chat: ChatMessage) => chat.note_id !== noteId)  
+    }))
+    },
     clearChat: () => set({
     chatHistory: []
 })
-}),{
-    name: "chat-history-storage",
-    partialize: (state) => ({
-      chatHistory: state.chatHistory
-    }),
 }))

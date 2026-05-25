@@ -53,14 +53,12 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
       setlatestAIResponse(fetchedRes.content);
       addToChatHistory([
         {
-        id: crypto.randomUUID(),
-        noteId: activeNote.id,
+        note_id: activeNote.id,
         role: "user",
         content: action
         
       },{
-        id: crypto.randomUUID(),
-        noteId: activeNote.id ,
+        note_id: activeNote.id ,
         role: "assistant",
         content: fetchedRes.content
       }

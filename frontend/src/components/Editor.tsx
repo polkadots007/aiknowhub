@@ -60,7 +60,9 @@ const Editor = () => {
         document.body.removeChild(textarea);
 
         if (!successful) {
-          throw new Error("Fallback copy failed");
+          throw new Error("Fallback copy failed", {
+            cause: error,
+          });
         }
 
         toast.success("Copied to clipboard", {
@@ -81,7 +83,7 @@ const Editor = () => {
     const selected = action.toLowerCase();
     const latestAIResponse =
       messages
-        .filter((m) => m.role === "assistant" && m.noteId === activeNote.id)
+        .filter((m) => m.role === "assistant" && m.note_id === activeNote.id)
         .at(-1)?.content ?? "";
     if (selected === "replace") {
       setContent(latestAIResponse);
@@ -104,7 +106,7 @@ const Editor = () => {
         ...activeNote,
         title: title,
         content: content,
-        updatedAt: Date.now(),
+        updated_at: new Date().toISOString(),
       });
       setIsDirty(false);
     }

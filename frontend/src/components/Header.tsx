@@ -1,20 +1,21 @@
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Logo } from "./Reusable/Icons";
 import { useNotesStore } from "../store/useNotesStore";
-import type { NotesState } from "../types";
+import type { NotesState, ThemeState } from "../types";
 import { useEffect, useState } from "react";
 import { ConfirmationModal } from "./Reusable/Modal";
 import SearchBar from "./Search";
 import { Spinner } from "./Reusable/Spinner";
 import { Toggle } from "./Reusable/Toggle";
 import { useAI } from "../hooks/useAI";
+import { useThemeStore } from "../store/useThemeStore";
 
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
   const deleteNote = useNotesStore((state: NotesState) => state.deleteNote);
   const activeNote = useNotesStore((state: NotesState) => state.activeNote);
-  const isDarkTheme = useNotesStore((state: NotesState) => state.isDarkTheme);
-  const setTheme = useNotesStore((state: NotesState) => state.setTheme);
+  const isDarkTheme = useThemeStore((state: ThemeState) => state.isDarkTheme);
+  const setTheme = useThemeStore((state: ThemeState) => state.setTheme);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const { isLoading } = useAI();
 

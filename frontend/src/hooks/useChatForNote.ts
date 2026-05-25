@@ -8,7 +8,7 @@ export function useChatForNote(noteId: number) {
 
   return useMemo(() => {
     return chatHistory.filter(
-      (msg) => msg.noteId === noteId
+      (msg) => msg.note_id === noteId
     );
   }, [chatHistory, noteId]);
 }
