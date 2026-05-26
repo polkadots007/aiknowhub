@@ -90,13 +90,13 @@ const Home = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-3 mt-10">
-            <div className="w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
+            <div className="w-fit px-6 py-2 border dark:border-white/[0.6] rounded-xl dark:text-white">
               Used by students, developers, and researchers
             </div>
-            <div className="w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
+            <div className="w-fit px-6 py-2 border dark:border-white/[0.6] rounded-xl dark:text-white">
               10K+ AI Summaries
             </div>
-            <div className="w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
+            <div className="w-fit px-6 py-2 border dark:border-white/[0.6] rounded-xl dark:text-white">
               No Payment needed
             </div>
           </div>
