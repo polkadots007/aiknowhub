@@ -12,13 +12,13 @@ const Home = () => {
     <div className="flex flex-col">
       <Header />
       <div className="dark:bg-[#0b1020] flex h-[100dvh] pt-24">
-        <section className="relative overflow-hidden p-16 w-1/2">
+        <section className="relative overflow-hidden p-16 w-1/2 pl-24">
           <div className="flex gap-2 justify-center items-center text-gray-800 dark:text-white px-4 py-2 border border-gray-600 rounded-xl w-fit">
             <img src={geminiLogo} alt="Gemini Logo" width="30" height="30" />
             Turn Notes Into Knowledge.
           </div>
 
-          <div className="absolute top-40 left-40 w-72 h-72 bg-violet-500/20 blur-[120px] rounded-full tracking-tight" />
+          <div className="absolute top-40 left-40 w-72 h-72 bg-violet-500/20 blur-[120px] rounded-full tracking-tight leading-[1.05]" />
           <h1 className="text-5xl md:text-7xl font-bold leading-tight text-black dark:!text-white">
             Smart Notes.
             <br />
@@ -89,17 +89,19 @@ const Home = () => {
               </span>
             </div>
           </div>
-          <div className="mt-10 w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
-            Used by students, developers, and researchers
-          </div>
-          <div className="mt-4 w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
-            10K+ AI Summaries
-          </div>
-          <div className="mt-4 w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
-            No Payment needed
+          <div className="flex flex-wrap gap-3 mt-10">
+            <div className="w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
+              Used by students, developers, and researchers
+            </div>
+            <div className="w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
+              10K+ AI Summaries
+            </div>
+            <div className="w-fit px-6 py-2 border border-white/[0.6] rounded-xl dark:text-white">
+              No Payment needed
+            </div>
           </div>
         </section>
-        <div className="w-1/2 pr-16 pt-16">
+        <div className="w-1/2 pr-24 pt-16">
           <div
             className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-[0_0_60px_rgba(139,92,246,0.15)] rotate-[2deg]
 hover:rotate-0
@@ -130,7 +132,7 @@ transition-transform duration-500"
                   <div className="flex flex-col gap-3 h-full">
                     <div className="h-6 bg-white/10 rounded-md w-full flex items-center px-2">
                       <span className="text-sm text-gray/90">
-                        AIKnowhub is veryyy
+                        AIKnowhub is very
                       </span>
                     </div>
                     <div className="h-6 bg-white/10 rounded-md w-5/6 flex items-center px-2">
