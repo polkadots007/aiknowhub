@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNotesStore } from "../store/useNotesStore";
 import { toast } from "sonner";
-import AIResponsePanel from "./AIResponsePanel";
+import AIResponsePanel from "../pages/AIResponsePanel";
 import { useAI } from "../hooks/useAI";
 import TagsPanel from "./TagsPanel";
 import type { ChatState, NotesState } from "../types";

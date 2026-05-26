@@ -171,3 +171,30 @@ Then if request fails:
 set({ notes: previousNotes })
 
 That is rollback.
+
+Higher value
+auth
+realtime sync
+note sharing
+markdown editor polish
+search improvements
+optimistic updates
+loading skeletons
+mobile responsiveness
+folder system
+Lower value (currently)
+streaming
+token animation
+fancy AI polish
+
+My recommendation for you
+Finish stability first
+loading states
+hydration
+error handling
+clean architecture
+consistent types
+
+THEN optionally:
+
+add streaming as "v2 enhancement"

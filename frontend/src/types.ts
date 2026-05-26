@@ -61,3 +61,10 @@ export interface ChatInsertMsg {
   role: "user" | "assistant";
   content: string;
 }
+
+export interface User {
+    id: number;
+    email: string;
+    metadata: string;
+    created_at: string;
+}

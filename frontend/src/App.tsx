@@ -1,18 +1,48 @@
-// import { useState } from "react";
-// import reactLogo from "./assets/react.svg";
-// import viteLogo from "./assets/vite.svg";
-// import heroImg from "./assets/hero.png";
 import "./App.css";
 import Notes from "./pages/Notes";
 import { Toaster } from "sonner";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import type { ReactNode } from "react";
+import Home from "./pages/Home";
 
-function App() {
-  return (
-    <>
-      <Notes />
-      <Toaster richColors position="top-center" />
-    </>
-  );
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const isAuthenticated = localStorage.getItem("token");
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
-export default App;
+function Login() {
+  return <h1>Login Page</h1>;
+}
+function SignUp() {
+  return <h1>Sign Page</h1>;
+}
+
+export default function App() {
+  return (
+    <div className="dark:bg-[#16171d]">
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/signUp" element={<SignUp />} />
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Notes />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+      <Toaster richColors position="top-center" />
+    </div>
+  );
+}

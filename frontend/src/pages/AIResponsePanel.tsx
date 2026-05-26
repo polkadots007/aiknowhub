@@ -1,12 +1,12 @@
 import ReactMarkdown from "react-markdown";
-import { ActionDropdown } from "./Reusable/Dropdown";
+import { ActionDropdown } from "../components/Reusable/Dropdown";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpIcon, StopIcon } from "@heroicons/react/24/outline";
 import { useAI } from "../hooks/useAI";
 import { toast } from "sonner";
 import type { ChatMessage } from "../types";
 import geminiLogo from "../../src/assets/gemini.svg";
-import { isAbortError } from "./helper";
+import { isAbortError } from "../components/Reusable/helper";
 import { useChatForNote } from "../hooks/useChatForNote";
 
 type AIPanelProps = {

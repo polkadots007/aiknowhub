@@ -1,7 +1,7 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/16/solid";
 import { useEffect, useState } from "react";
 import { useNotesStore } from "../store/useNotesStore";
-import { Dropdown } from "./Reusable/Dropdown";
+import { Dropdown } from "../components/Reusable/Dropdown";
 import type { SearchTypeProp } from "../types";
 
 const SearchBar = () => {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import Editor from "../components/Editor";
-import Header from "../components/Header";
-import ViewNotes from "../components/View";
+import Editor from "./Editor";
+import Header from "./Header";
+import ViewNotes from "./View";
 import { useNotesStore } from "../store/useNotesStore";
 import { useChatStore } from "../store/useChatStore";
 
@@ -15,7 +15,7 @@ const Notes = () => {
     loadChats();
   }, []);
   return (
-    <div className="dark:bg-[#16171d]">
+    <div>
       <Header />
       {activeNote && activeNote.id ? (
         <Editor key={activeNote.id} />
