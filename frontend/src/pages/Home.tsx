@@ -6,8 +6,17 @@ import {
   MagnifyingGlassIcon,
   TagIcon,
 } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  function redirectToSignUp() {
+    navigate("/signUp");
+  }
+  function redirectToLogIn() {
+    navigate("/login");
+  }
   return (
     <div className="flex flex-col">
       <Header />
@@ -37,7 +46,7 @@ const Home = () => {
             hover:from-violet-600 hover:to-blue-600
             transition-all duration-300
             shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
-              onClick={() => console.log("clicked sign up")}
+              onClick={() => redirectToSignUp()}
             >
               Sign Up
               <ArrowRightIcon className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -45,7 +54,7 @@ const Home = () => {
             <button
               className="group border border-blue-600 px-6 py-2 rounded-xl  text-sm cursor-pointer hover:bg-gradient-to-r hover:from-violet-500 hover:to-blue-500 dark:text-white border border-white/10 bg-white/5 backdrop-blur-lg
              hover:bg-white/10 hover:text-white"
-              onClick={() => console.log("clicked login")}
+              onClick={() => redirectToLogIn()}
             >
               Log In
             </button>

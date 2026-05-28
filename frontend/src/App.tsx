@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = localStorage.getItem("token");
@@ -15,9 +16,6 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   return children;
 }
 
-function Login() {
-  return <h1>Login Page</h1>;
-}
 function SignUp() {
   return <h1>Sign Page</h1>;
 }

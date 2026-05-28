@@ -12,3 +12,13 @@ export const Logo = () => {
     </div>
   );
 };
+
+export const LogoSymbol = () => {
+  return (
+    <div className="flex items-center gap-3 text-blue-500">
+      <div className="p-2 rounded-xl bg-gradient-to-br from-violet-500 to-blue-500 shadow-lg shadow-violet-500/20">
+        <BugAntIcon className="w-6 h-6 text-white" />
+      </div>
+    </div>
+  );
+};

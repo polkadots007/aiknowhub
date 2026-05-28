@@ -9,6 +9,7 @@ import { Spinner } from "../components/Reusable/Spinner";
 import { Toggle } from "../components/Reusable/Toggle";
 import { useAI } from "../hooks/useAI";
 import { useThemeStore } from "../store/useThemeStore";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
@@ -19,7 +20,16 @@ const Header = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const { isLoading } = useAI();
   const isAuthenticated = false;
+  const isLoggingIn = true;
   const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
+  const navigate = useNavigate();
+
+  function redirectToSignUp() {
+    navigate("/signUp");
+  }
+  function redirectToLogIn() {
+    navigate("/login");
+  }
 
   function onConfirm() {
     if (activeNote) deleteNote(activeNote?.id);
@@ -71,6 +81,27 @@ const Header = () => {
             {isAuthenticated && <SearchBar />}
             {/* Right */}
             <div className="flex items-center gap-4">
+              {!isAuthenticated && !isLoggingIn && (
+                <div className="flex gap-4">
+                  <button
+                    className="group flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-medium text-white cursor-pointer
+            bg-gradient-to-r from-violet-500 to-blue-500
+            hover:from-violet-600 hover:to-blue-600
+            transition-all duration-300
+            shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40"
+                    onClick={() => redirectToSignUp()}
+                  >
+                    Sign Up
+                  </button>
+                  <button
+                    className="group border border-blue-600 px-6 py-2 rounded-xl  text-sm cursor-pointer hover:bg-gradient-to-r hover:from-violet-500 hover:to-blue-500 dark:text-white border border-white/10 bg-white/5 backdrop-blur-lg
+             hover:bg-white/10 hover:text-white"
+                    onClick={() => redirectToLogIn()}
+                  >
+                    Log In
+                  </button>
+                </div>
+              )}
               {isAuthenticated && (
                 <button
                   className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
