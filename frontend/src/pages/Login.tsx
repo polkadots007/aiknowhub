@@ -31,16 +31,16 @@ const Login = () => {
         <div
           className="
                 relative
-    float
-    max-w-md
-    w-full
-    bg-white/[0.04]
-    backdrop-blur-2xl
-    border border-gray-400 dark:border-white/10
-    shadow-2xl
-    rounded-3xl
-    transition-all duration-500
-        "
+                float
+                max-w-md
+                w-full
+                bg-white/[0.04]
+                backdrop-blur-2xl
+                border border-gray-400 dark:border-white/10
+                shadow-2xl
+                rounded-3xl
+                transition-all duration-500
+                    "
         >
           <div className="px-6 py-3 flex gap-2 items-center justify-center text-blue-600 dark:text-white border-b border-gray-400 dark:border-white/5">
             <div className="w-1/8">
