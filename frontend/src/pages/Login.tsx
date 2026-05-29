@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { UserLoginType } from "../types";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 
 const Login = () => {
   const [user, setUser] = useState<UserLoginType>({
@@ -12,6 +13,7 @@ const Login = () => {
     password: "",
   });
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const navigate = useNavigate();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex =
@@ -168,35 +170,63 @@ const Login = () => {
                 ></input>
               </div>
               <div className="w-full">
-                <div className="w-20 text-blue-600 dark:text-white pb-2">
-                  Password{" "}
+                <div className="w-20 text-blue-600 dark:text-white pb-2 pt-2">
+                  Password
                 </div>
+
                 {!isValidPassword && submitted && user.password.length > 0 && (
                   <p className="text-red-500 text-sm mt-1">
                     Password must be at least 8 characters and include
-                    uppercase, lowercase, number, and special character.{" "}
+                    uppercase, lowercase, number, and special character.
                   </p>
                 )}
-                <input
-                  className="
-                    h-12
-                    w-full
-                    bg-white/5
-                    border border-gray-400 dark:border-white/10
-                    rounded-xl
-                    px-4 py-3
-                    text-blue-600 dark:text-white
-                    placeholder:text-gray-500
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-violet-500
-                    focus:bg-white/10
-                    transition-all duration-300
-                    "
-                  type="password"
-                  required={true}
-                  onChange={handlePwdChange}
-                ></input>
+
+                <div className="relative">
+                  <input
+                    className="
+                            h-12
+                            w-full
+                            bg-white/5
+                            border border-gray-400 dark:border-white/10
+                            rounded-xl
+                            px-4
+                            pr-12
+                            py-3
+                            text-blue-600 dark:text-white
+                            placeholder:text-gray-500
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-violet-500
+                            focus:bg-white/10
+                            transition-all duration-300
+                          "
+                    type={showPassword ? "text" : "password"}
+                    required
+                    onChange={handlePwdChange}
+                  />
+
+                  {user.password.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="
+                        absolute
+                        right-3
+                        top-1/2
+                        -translate-y-1/2
+                        text-gray-400
+                        hover:text-white
+                        transition-colors
+                      "
+                    >
+                      {showPassword ? (
+                        <EyeSlashIcon className="w-5 h-5" />
+                      ) : (
+                        <EyeIcon className="w-5 h-5" />
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="w-full flex justify-center mt-6">
                 <button

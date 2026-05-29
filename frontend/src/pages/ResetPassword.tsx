@@ -5,12 +5,16 @@ import { useNavigate } from "react-router-dom";
 import { LogoSymbol } from "../components/Reusable/Icons";
 import { Spinner } from "../components/Reusable/Spinner";
 import Header from "./Header";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
 
   const navigate = useNavigate();
   const passwordRegex =
@@ -138,8 +142,9 @@ const ResetPassword = () => {
                       Please enter a valid password
                     </p>
                   )}
-                  <input
-                    className={`
+                  <div className="relative">
+                    <input
+                      className={`
                 h-12
                     w-full
                     bg-white/5
@@ -155,10 +160,32 @@ const ResetPassword = () => {
                     transition-all duration-300
                     ${!isValidPassword && submitted && password.length > 0 ? "border-red-500" : "border-gray-400 dark:border-white/10"}
                     `}
-                    type="password"
-                    required={true}
-                    onChange={handlePassword}
-                  ></input>
+                      type="password"
+                      required={true}
+                      onChange={handlePassword}
+                    ></input>
+                    {password.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="
+                        absolute
+                        right-3
+                        top-1/2
+                        -translate-y-1/2
+                        text-gray-400
+                        hover:text-white
+                        transition-colors
+                      "
+                      >
+                        {showPassword ? (
+                          <EyeSlashIcon className="w-5 h-5" />
+                        ) : (
+                          <EyeIcon className="w-5 h-5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="w-full gap-4 items-center">
                   <div className="w-full text-blue-600 dark:text-white pb-2 pt-2">
@@ -179,8 +206,9 @@ const ResetPassword = () => {
                       </p>
                     )
                   )}
-                  <input
-                    className={`
+                  <div className="relative">
+                    <input
+                      className={`
                 h-12
                     w-full
                     bg-white/5
@@ -202,10 +230,32 @@ const ResetPassword = () => {
                         : "border-gray-400 dark:border-white/10"
                     }
                     `}
-                    type="password"
-                    required={true}
-                    onChange={handleconfirmPassword}
-                  ></input>
+                      type="password"
+                      required={true}
+                      onChange={handleconfirmPassword}
+                    ></input>
+                    {confirmPassword.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="
+                        absolute
+                        right-3
+                        top-1/2
+                        -translate-y-1/2
+                        text-gray-400
+                        hover:text-white
+                        transition-colors
+                      "
+                      >
+                        {showConfirmPassword ? (
+                          <EyeSlashIcon className="w-5 h-5" />
+                        ) : (
+                          <EyeIcon className="w-5 h-5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="w-full flex justify-center mt-6">
                   <button
