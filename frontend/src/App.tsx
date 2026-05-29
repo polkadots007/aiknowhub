@@ -1,7 +1,7 @@
 import "./App.css";
 import Notes from "./pages/Notes";
-import { toast, Toaster } from "sonner";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { Toaster } from "sonner";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   Home,
   Login,
