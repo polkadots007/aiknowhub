@@ -23,6 +23,9 @@ const Login = () => {
   function redirectToSignUp() {
     navigate("/signUp");
   }
+  function handleRecovery() {
+    navigate("/recover");
+  }
   async function handleLogin() {
     setSubmitted(true);
     if (!isValidEmail) {
@@ -43,13 +46,13 @@ const Login = () => {
       });
 
       console.log("Logged in:", data);
-      toast.success("Logged In", {
-        duration: 2000,
-      });
 
       if (error) {
         throw error;
       }
+      toast.success("Logged In", {
+        duration: 2000,
+      });
 
       navigate("/dashboard");
     } catch (error) {
@@ -64,6 +67,8 @@ const Login = () => {
           duration: 2000,
         });
       }
+    } finally {
+      setSubmitted(false);
     }
   }
   function handleInput(type: keyof UserLoginType, value: string) {
@@ -217,7 +222,7 @@ const Login = () => {
               <button
                 type="submit"
                 className="text-blue-600 hover:text-blue-800 pl-2 cursor-pointer"
-                onClick={() => console.log("recover")}
+                onClick={handleRecovery}
               >
                 {" "}
                 Recover account

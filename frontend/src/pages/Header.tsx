@@ -1,4 +1,8 @@
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowRightStartOnRectangleIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { Logo } from "../components/Reusable/Icons";
 import { useNotesStore } from "../store/useNotesStore";
 import type { NotesState, ThemeState } from "../types";
@@ -9,7 +13,10 @@ import { Spinner } from "../components/Reusable/Spinner";
 import { Toggle } from "../components/Reusable/Toggle";
 import { useAI } from "../hooks/useAI";
 import { useThemeStore } from "../store/useThemeStore";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import { supabase } from "../lib/supabase";
+import { toast } from "sonner";
 
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
@@ -19,16 +26,25 @@ const Header = () => {
   const setTheme = useThemeStore((state: ThemeState) => state.setTheme);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const { isLoading } = useAI();
-  const isAuthenticated = false;
-  const isLoggingIn = true;
+  const { user, logout } = useAuthStore();
+  const isAuthenticated = user !== null;
   const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isLoginPage = location.pathname === "/login";
+
+  console.log(user, isAuthenticated, isLoginPage);
 
   function redirectToSignUp() {
     navigate("/signUp");
   }
   function redirectToLogIn() {
     navigate("/login");
+  }
+
+  function redirectHome() {
+    navigate("/");
   }
 
   function onConfirm() {
@@ -48,6 +64,28 @@ const Header = () => {
       setTheme(!prev);
       return !prev;
     });
+  }
+  async function handleLogOut() {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      logout();
+
+      navigate("/");
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        toast.error(error.message, {
+          duration: 2000,
+        });
+      } else {
+        console.error(error);
+        toast.error("An error occurred", {
+          duration: 2000,
+        });
+      }
+    }
   }
 
   useEffect(() => {
@@ -81,7 +119,7 @@ const Header = () => {
             {isAuthenticated && <SearchBar />}
             {/* Right */}
             <div className="flex items-center gap-4">
-              {!isAuthenticated && !isLoggingIn && (
+              {!isAuthenticated && !isLoginPage && (
                 <div className="flex gap-4">
                   <button
                     className="group flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-medium text-white cursor-pointer
@@ -121,6 +159,15 @@ const Header = () => {
                 </button>
               )}
               <Toggle toggled={isDarkMode} setToggle={handleToggle} />
+              {isAuthenticated && (
+                <button
+                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
+                  onClick={handleLogOut}
+                >
+                  <ArrowRightStartOnRectangleIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                  Log Out
+                </button>
+              )}
             </div>
           </div>
         </div>

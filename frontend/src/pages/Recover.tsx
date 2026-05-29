@@ -7,7 +7,7 @@ import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
 import { Spinner } from "../components/Reusable/Spinner";
 
-const VerifyEmail = () => {
+const Recover = () => {
   const [user, setUser] = useState<UserLoginType>({
     email: "",
     password: "",
@@ -26,15 +26,14 @@ const VerifyEmail = () => {
     setSubmitted(true);
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: user.email,
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: "http://localhost:5173/reset-password",
       });
 
       if (error) {
         throw error;
       }
-      toast.success("Verification email sent!", {
+      toast.success("Password reset email sent!", {
         duration: 2000,
       });
       redirectToLogIn();
@@ -167,7 +166,7 @@ const VerifyEmail = () => {
                 hover:shadow-violet-500/40
                 "
                   >
-                    Resend verification link
+                    Reset Password
                   </button>
                 </div>
               </form>
@@ -195,4 +194,4 @@ const VerifyEmail = () => {
   );
 };
 
-export default VerifyEmail;
+export default Recover;

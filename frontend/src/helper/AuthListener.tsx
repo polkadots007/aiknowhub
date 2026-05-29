@@ -14,9 +14,6 @@ const AuthListener = () => {
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
         login(session.user, session);
-        toast.success("Email Verified! Logging you in...", {
-          duration: 2000,
-        });
         navigate("/dashboard");
       }
 

@@ -1,71 +1,83 @@
-import { useNavigate } from "react-router-dom";
-import { LogoSymbol } from "../components/Reusable/Icons";
-import Header from "./Header";
 import { useState } from "react";
-import type { UserLoginType } from "../types";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { LogoSymbol } from "../components/Reusable/Icons";
 import { Spinner } from "../components/Reusable/Spinner";
+import Header from "./Header";
 
-const VerifyEmail = () => {
-  const [user, setUser] = useState<UserLoginType>({
-    email: "",
-    password: "",
-  });
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const isValidEmail = emailRegex.test(user.email);
-  const [submitted, setSubmitted] = useState<boolean>(false);
+const ResetPassword = () => {
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+
   const navigate = useNavigate();
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const isValidPassword = passwordRegex.test(password);
+  const isValidConfirmPwd = passwordRegex.test(confirmPassword);
+  const passwordsMatch = password === confirmPassword;
 
   function redirectToLogIn() {
     navigate("/login");
   }
+  function handlePassword(e: React.ChangeEvent<HTMLInputElement>) {
+    setPassword(e.target.value);
+  }
+  function handleconfirmPassword(e: React.ChangeEvent<HTMLInputElement>) {
+    setConfirmPassword(e.target.value);
+  }
 
-  async function resendVerificationEmail() {
+  async function updatePassword() {
     setSubmitted(true);
+    if (!isValidPassword) {
+      console.error(
+        "Password must contain uppercase, lowercase, number and special character",
+      );
+      return;
+    }
+    if (!passwordsMatch) {
+      console.error("Password do not match");
+      return;
+    }
     setIsLoading(true);
+
     try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: user.email,
+      const { error } = await supabase.auth.updateUser({
+        password,
       });
 
       if (error) {
         throw error;
       }
-      toast.success("Verification email sent!", {
+
+      toast.success("Password updated!", {
         duration: 2000,
       });
-      redirectToLogIn();
+      await supabase.auth.signOut();
+      navigate("/login");
     } catch (error) {
+      console.error(error);
+
       if (error instanceof Error) {
-        console.error(error.message);
         toast.error(error.message, {
           duration: 2000,
         });
+        return;
       } else {
         console.error(error);
-        toast.error("An error occurred", {
+        toast.error("Error occurred while updating password", {
           duration: 2000,
         });
+        return;
       }
     } finally {
       setIsLoading(false);
       setSubmitted(false);
     }
   }
-  function handleInput(type: keyof UserLoginType, value: string) {
-    setUser((prev) => {
-      return {
-        ...prev,
-        [type]: value,
-      };
-    });
-  }
-  function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
-    handleInput("email", e.target.value);
-  }
+
   return (
     <div className="flex flex-col">
       <Header />
@@ -105,31 +117,25 @@ const VerifyEmail = () => {
               <LogoSymbol />
             </div>
             <div className="flex-1 text-center text-xl font-semibold">
-              Welcome to the AI workspace
+              Reset Password
             </div>
-          </div>
-          <div className="text-xs text-gray-500 text-center mt-2 mb-2 tracking-wide">
-            Learn smarter with AIKnowHub
           </div>
           {isLoading && <Spinner />}
           <div className="flex flex-col gap-4 px-10 py-6">
             <div className="w-full gap-4 items-center">
-              <div className="w-full text-center text-blue-600 dark:text-gray-400 pb-2">
-                Didn't receive email? Re-enter your email
-              </div>
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  resendVerificationEmail();
+                  updatePassword();
                 }}
               >
                 <div className="w-full gap-4 items-center">
-                  <div className="w-20 text-blue-600 dark:text-white pb-2">
-                    Email{" "}
+                  <div className="w-full text-blue-600 dark:text-white pb-2">
+                    New Password{" "}
                   </div>
-                  {!isValidEmail && submitted && user.email.length > 0 && (
+                  {!isValidPassword && submitted && password.length > 0 && (
                     <p className="text-red-500 text-sm mt-1">
-                      Please enter a valid email
+                      Please enter a valid password
                     </p>
                   )}
                   <input
@@ -147,11 +153,58 @@ const VerifyEmail = () => {
                     focus:ring-violet-500
                     focus:bg-white/10
                     transition-all duration-300
-                    ${!isValidEmail && submitted && user.email.length > 0 ? "border-red-500" : "border-gray-400 dark:border-white/10"}
+                    ${!isValidPassword && submitted && password.length > 0 ? "border-red-500" : "border-gray-400 dark:border-white/10"}
                     `}
-                    type="email"
+                    type="password"
                     required={true}
-                    onChange={handleEmailChange}
+                    onChange={handlePassword}
+                  ></input>
+                </div>
+                <div className="w-full gap-4 items-center">
+                  <div className="w-full text-blue-600 dark:text-white pb-2 pt-2">
+                    Confirm Password{" "}
+                  </div>
+                  {!isValidConfirmPwd &&
+                  submitted &&
+                  confirmPassword.length > 0 ? (
+                    <p className="text-red-500 text-sm mt-1">
+                      Please enter a valid password
+                    </p>
+                  ) : (
+                    !passwordsMatch &&
+                    submitted &&
+                    confirmPassword.length > 0 && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Passwords do not match
+                      </p>
+                    )
+                  )}
+                  <input
+                    className={`
+                h-12
+                    w-full
+                    bg-white/5
+                    border 
+                    rounded-xl
+                    px-4 py-3
+                    text-blue-600 dark:text-white
+                    placeholder:text-gray-500
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-violet-500
+                    focus:bg-white/10
+                    transition-all duration-300
+                    ${
+                      confirmPassword.length > 0 &&
+                      submitted &&
+                      (!isValidConfirmPwd || !passwordsMatch)
+                        ? "border-red-500"
+                        : "border-gray-400 dark:border-white/10"
+                    }
+                    `}
+                    type="password"
+                    required={true}
+                    onChange={handleconfirmPassword}
                   ></input>
                 </div>
                 <div className="w-full flex justify-center mt-6">
@@ -165,9 +218,12 @@ const VerifyEmail = () => {
                 hover:scale-[1.02]
                 shadow-lg shadow-violet-500/20
                 hover:shadow-violet-500/40
+                disabled:opacity-50
+                disabled:cursor-not-allowed
                 "
+                    disabled={isLoading}
                   >
-                    Resend verification link
+                    Reset Password
                   </button>
                 </div>
               </form>
@@ -195,4 +251,4 @@ const VerifyEmail = () => {
   );
 };
 
-export default VerifyEmail;
+export default ResetPassword;

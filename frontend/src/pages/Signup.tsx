@@ -57,6 +57,7 @@ const SignUp = () => {
           },
         );
       }
+      redirectToLogIn();
 
       if (error) {
         throw error;
@@ -75,6 +76,7 @@ const SignUp = () => {
       }
     } finally {
       setIsLoading(false);
+      setSubmitted(false);
     }
   }
   function handleInput(type: keyof UserLoginType, value: string) {
