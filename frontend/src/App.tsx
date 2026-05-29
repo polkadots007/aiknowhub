@@ -11,19 +11,8 @@ import {
   VerifyEmail,
 } from "./pages";
 import { AuthCallback, AuthListener, ProtectedRoute } from "./helper";
-import { useEffect } from "react";
-import { supabase } from "./lib/supabase";
 
 export default function App() {
-  // useEffect(() => {
-  //   supabase.auth.getSession().then(({ data }) => {
-  //     if (!data.session) {
-  //       toast.error("Invalid or expired reset link");
-
-  //       navigate("/login");
-  //     }
-  //   });
-  // }, []);
   return (
     <div className="dark:bg-[#16171d]">
       <BrowserRouter>
@@ -36,8 +25,14 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/verify" element={<VerifyEmail />} />
           <Route path="/recover" element={<Recover />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="*" element={<Home />} />
+          <Route
+            path="/reset-password"
+            element={
+              <ProtectedRoute>
+                <ResetPassword />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/dashboard"
@@ -47,6 +42,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<Home />} />
         </Routes>
       </BrowserRouter>
       <Toaster richColors position="top-center" />

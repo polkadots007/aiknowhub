@@ -49,7 +49,7 @@ const SignUp = () => {
       });
 
       if (!data.session) {
-        console.log("Please check your email to confirm your account.");
+        console.info("Please check your email to confirm your account.");
         toast.success(
           "Account created successfully! Please check your email to confirm your account.",
           {

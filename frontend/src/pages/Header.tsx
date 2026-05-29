@@ -34,17 +34,11 @@ const Header = () => {
 
   const isLoginPage = location.pathname === "/login";
 
-  console.log(user, isAuthenticated, isLoginPage);
-
   function redirectToSignUp() {
     navigate("/signUp");
   }
   function redirectToLogIn() {
     navigate("/login");
-  }
-
-  function redirectHome() {
-    navigate("/");
   }
 
   function onConfirm() {

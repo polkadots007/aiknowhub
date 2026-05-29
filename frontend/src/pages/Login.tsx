@@ -45,8 +45,6 @@ const Login = () => {
         password: user.password,
       });
 
-      console.log("Logged in:", data);
-
       if (error) {
         throw error;
       }
