@@ -1,3 +1,4 @@
+import type { Session, User } from "@supabase/supabase-js";
 export interface Note {
     id: number;
     title: string;
@@ -62,9 +63,29 @@ export interface ChatInsertMsg {
   content: string;
 }
 
-export interface User {
+export interface UserType {
     id: number;
     email: string;
     metadata: string;
     created_at: string;
+}
+
+export interface UserLoginType{
+    email: string;
+    password: string;
+}
+
+export interface AuthState {
+    user: User | null;
+    session : Session | null;
+    initialized: boolean;
+    isAuthLoading: boolean;
+    setAuthLoading: (authStatus: boolean) => void;
+
+  login: (
+    user: User | null,
+    session: Session | null
+  ) => void;
+
+  logout: () => void;
 }

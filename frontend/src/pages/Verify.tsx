@@ -7,60 +7,36 @@ import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
 import { Spinner } from "../components/Reusable/Spinner";
 
-const SignUp = () => {
+const VerifyEmail = () => {
   const [user, setUser] = useState<UserLoginType>({
     email: "",
     password: "",
   });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValidEmail = emailRegex.test(user.email);
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-  const isValidEmail = emailRegex.test(user.email);
-  const isValidPassword = passwordRegex.test(user.password);
 
   function redirectToLogIn() {
     navigate("/login");
   }
-  async function handleSignup() {
-    setIsLoading(true);
+
+  async function resendVerificationEmail() {
     setSubmitted(true);
-    if (!isValidEmail) {
-      console.error("Invalid email");
-      return;
-    }
-    if (!isValidPassword) {
-      console.error(
-        "Password must contain uppercase, lowercase, number and special character",
-      );
-      return;
-    }
-
+    setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.resend({
+        type: "signup",
         email: user.email,
-        password: user.password,
-        options: {
-          emailRedirectTo: "http://localhost:5173/auth/callback",
-        },
       });
-
-      if (!data.session) {
-        console.log("Please check your email to confirm your account.");
-        toast.success(
-          "Account created successfully! Please check your email to confirm your account.",
-          {
-            duration: 2000,
-          },
-        );
-      }
 
       if (error) {
         throw error;
       }
+      toast.success("Verification email sent!", {
+        duration: 2000,
+      });
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -88,10 +64,6 @@ const SignUp = () => {
   function handleEmailChange(e: React.ChangeEvent<HTMLInputElement>) {
     handleInput("email", e.target.value);
   }
-  function handlePwdChange(e: React.ChangeEvent<HTMLInputElement>) {
-    handleInput("password", e.target.value);
-  }
-
   return (
     <div className="flex flex-col">
       <Header />
@@ -139,23 +111,27 @@ const SignUp = () => {
           </div>
           {isLoading && <Spinner />}
           <div className="flex flex-col gap-4 px-10 py-6">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSignup();
-              }}
-            >
-              <div className="w-full gap-4 items-center">
-                <div className="w-20 text-blue-600 dark:text-white pb-2">
-                  Email{" "}
-                </div>
-                {!isValidEmail && submitted && user.email.length > 0 && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Please enter a valid email
-                  </p>
-                )}
-                <input
-                  className={`
+            <div className="w-full gap-4 items-center">
+              <div className="w-full text-center text-blue-600 dark:text-gray-400 pb-2">
+                Didn't receive email? Re-enter your email
+              </div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  resendVerificationEmail();
+                }}
+              >
+                <div className="w-full gap-4 items-center">
+                  <div className="w-20 text-blue-600 dark:text-white pb-2">
+                    Email{" "}
+                  </div>
+                  {!isValidEmail && submitted && user.email.length > 0 && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Please enter a valid email
+                    </p>
+                  )}
+                  <input
+                    className={`
                 h-12
                     w-full
                     bg-white/5
@@ -171,45 +147,14 @@ const SignUp = () => {
                     transition-all duration-300
                     ${!isValidEmail && submitted && user.email.length > 0 ? "border-red-500" : "border-gray-400 dark:border-white/10"}
                     `}
-                  type="email"
-                  required={true}
-                  onChange={handleEmailChange}
-                ></input>
-              </div>
-              <div className="w-full">
-                <div className="w-20 text-blue-600 dark:text-white pb-2">
-                  Password{" "}
+                    type="email"
+                    required={true}
+                    onChange={handleEmailChange}
+                  ></input>
                 </div>
-                {!isValidPassword && submitted && user.password.length > 0 && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Password must be at least 8 characters and include
-                    uppercase, lowercase, number, and special character.{" "}
-                  </p>
-                )}
-                <input
-                  className="
-                    h-12
-                    w-full
-                    bg-white/5
-                    border border-gray-400 dark:border-white/10
-                    rounded-xl
-                    px-4 py-3
-                    text-blue-600 dark:text-white
-                    placeholder:text-gray-500
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-violet-500
-                    focus:bg-white/10
-                    transition-all duration-300
-                    "
-                  type="password"
-                  required={true}
-                  onChange={handlePwdChange}
-                ></input>
-              </div>
-              <div className="w-full flex justify-center mt-6">
-                <button
-                  className="
+                <div className="w-full flex justify-center mt-6">
+                  <button
+                    className="
                 w-full py-3 rounded-xl text-sm cursor-pointer
                 bg-gradient-to-r from-violet-500 to-blue-500
                 hover:from-violet-600 hover:to-blue-600
@@ -219,26 +164,27 @@ const SignUp = () => {
                 shadow-lg shadow-violet-500/20
                 hover:shadow-violet-500/40
                 "
+                  >
+                    Resend verification link
+                  </button>
+                </div>
+              </form>
+              <div className="flex items-center gap-4 py-4">
+                <div className="h-px bg-white/10 flex-1" />
+                <span className="text-xs text-gray-500">OR CONTINUE WITH</span>
+                <div className="h-px bg-white/10 flex-1" />
+              </div>
+
+              <div className="w-full flex justify-center">
+                <span className="text-gray-400">Already registered?</span>
+                <button
+                  className="text-blue-600 hover:text-blue-800 pl-2 cursor-pointer"
+                  onClick={() => redirectToLogIn()}
                 >
-                  Sign Up
+                  {" "}
+                  Log In
                 </button>
               </div>
-            </form>
-            <div className="flex items-center gap-4 py-4">
-              <div className="h-px bg-white/10 flex-1" />
-              <span className="text-xs text-gray-500">OR CONTINUE WITH</span>
-              <div className="h-px bg-white/10 flex-1" />
-            </div>
-
-            <div className="w-full flex justify-center">
-              <span className="text-gray-400">Already registered?</span>
-              <button
-                className="text-blue-600 hover:text-blue-800 pl-2 cursor-pointer"
-                onClick={() => redirectToLogIn()}
-              >
-                {" "}
-                Log In
-              </button>
             </div>
           </div>
         </div>
@@ -247,4 +193,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default VerifyEmail;
