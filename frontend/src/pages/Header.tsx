@@ -1,13 +1,14 @@
 import {
   ArrowRightStartOnRectangleIcon,
   PlusIcon,
+  ShareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Logo } from "../components/Reusable/Icons";
 import { useNotesStore } from "../store/useNotesStore";
-import type { NotesState, ThemeState } from "../types";
+import type { NotesState, SharedUsersProp, ThemeState } from "../types";
 import { useEffect, useState } from "react";
-import { ConfirmationModal } from "../components/Reusable/Modal";
+import { ConfirmationModal, ShareModal } from "../components/Reusable/Modal";
 import SearchBar from "./Search";
 import { Spinner } from "../components/Reusable/Spinner";
 import { Toggle } from "../components/Reusable/Toggle";
@@ -25,12 +26,23 @@ const Header = () => {
   const isDarkTheme = useThemeStore((state: ThemeState) => state.isDarkTheme);
   const setTheme = useThemeStore((state: ThemeState) => state.setTheme);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openShareModal, setOpenShareModal] = useState<boolean>(false);
+  const [emails, setEmails] = useState<string[]>([]);
   const { isLoading } = useAI();
   const { user, logout } = useAuthStore();
   const isAuthenticated = user !== null;
   const [isDarkMode, setDarkMode] = useState<boolean>(isDarkTheme ?? false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [sharedUsers, setSharedUsers] = useState<SharedUsersProp[]>([]);
+
+  async function initiateShare() {
+    if (!activeNote) return;
+
+    const users = await fetchSharedUsers(activeNote.id);
+    setSharedUsers(users);
+    setOpenShareModal(true);
+  }
 
   const isLoginPage = location.pathname === "/login";
 
@@ -47,6 +59,12 @@ const Header = () => {
   }
   function onCancel() {
     setOpenModal(false);
+  }
+  function onShare() {
+    if (activeNote) shareNotebyEmails(activeNote.id, emails);
+  }
+  function onShareCancel() {
+    setOpenShareModal(false);
   }
   function handleToggle() {
     setDarkMode((prev: boolean) => {
@@ -82,6 +100,56 @@ const Header = () => {
     }
   }
 
+  function handleAdd() {
+    if (!user) return;
+    addNote(user.id);
+  }
+  function getEmails(inputMailIds: string[]) {
+    setEmails(inputMailIds);
+  }
+  async function fetchSharedUsers(noteId: string) {
+    const { data, error } = await supabase
+      .from("note_users")
+      .select(
+        `
+      user_id,
+      role,
+      profiles (
+        email
+      )
+    `,
+      )
+      .eq("note_id", noteId);
+
+    if (error) throw error;
+
+    return data;
+  }
+  async function shareNotebyEmails(noteId: number, emails: string[]) {
+    try {
+      const { error } = await supabase.rpc("share_note_by_emails", {
+        p_note_id: noteId,
+        p_emails: emails,
+      });
+
+      if (error) throw error;
+
+      toast.success(`Note shared with ${emails.length} users!`, {
+        duration: 2000,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        toast.error(error.message, { duration: 2000 });
+      } else {
+        console.error(error);
+        toast.error("An error occurred", { duration: 2000 });
+      }
+    } finally {
+      setOpenShareModal(false);
+    }
+  }
+
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDarkTheme);
   }, [isDarkTheme]);
@@ -90,8 +158,8 @@ const Header = () => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.ctrlKey && event.key.toLowerCase() === "n") {
         event.preventDefault();
-
-        addNote();
+        if (!user) return;
+        addNote(user.id);
       }
     }
 
@@ -136,26 +204,37 @@ const Header = () => {
               )}
               {isAuthenticated && (
                 <button
-                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
-                  onClick={addNote}
+                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800 transition-colors duration-200 ease-in-out active:scale-[0.98]"
+                  onClick={handleAdd}
                 >
                   <PlusIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
                   New Note
                 </button>
               )}
               {activeNote && isAuthenticated && (
-                <button
-                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
-                  onClick={() => setOpenModal(true)}
-                >
-                  <TrashIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
-                  Delete
-                </button>
+                <>
+                  <button
+                    className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800
+                    transition-colors duration-200 ease-in-out active:scale-[0.98]"
+                    onClick={() => setOpenModal(true)}
+                  >
+                    <TrashIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                    Delete Note
+                  </button>
+                  <button
+                    className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800 transition-colors duration-200 ease-in-out active:scale-[0.98]"
+                    onClick={() => initiateShare()}
+                  >
+                    <ShareIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                    Share note
+                  </button>
+                </>
               )}
               <Toggle toggled={isDarkMode} setToggle={handleToggle} />
               {isAuthenticated && (
                 <button
-                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800"
+                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800
+                  transition-colors duration-200 ease-in-out active:scale-[0.98]"
                   onClick={handleLogOut}
                 >
                   <ArrowRightStartOnRectangleIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
@@ -172,6 +251,16 @@ const Header = () => {
           onConfirm={onConfirm}
           onCancel={onCancel}
           title={activeNote?.title || "Note"}
+        />
+      )}
+      {openShareModal && (
+        <ShareModal
+          open={openShareModal}
+          onConfirm={onShare}
+          onCancel={onShareCancel}
+          title={activeNote?.title || "Note"}
+          getEmails={getEmails}
+          sharedUsers={sharedUsers}
         />
       )}
       {isLoading && <Spinner />}

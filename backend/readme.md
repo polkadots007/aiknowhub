@@ -194,3 +194,155 @@ POST /generate-title
 ```
 
 and connect Gemini/OpenAI to it.
+
+Yep — that’s the correct next architectural step.
+
+Flow becomes:
+
+```txt id="vqawhn"
+Frontend
+→ sends Supabase JWT access token
+→ Backend verifies token
+→ Backend calls Gemini API securely
+→ Backend returns response
+```
+
+This is the proper production structure because:
+
+- Gemini API key stays secret
+- backend controls usage/rate limits
+- authenticated users only
+- usage tracking possible
+- protects against API abuse
+
+---
+
+# Frontend → get token
+
+From Supabase session:
+
+```ts id="zdybyq"
+const {
+  data: { session },
+} = await supabase.auth.getSession();
+
+const token = session?.access_token;
+```
+
+---
+
+# Send token to backend
+
+Example:
+
+```ts id="brt1k4"
+await fetch("http://localhost:3000/api/chat", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({
+    prompt,
+  }),
+});
+```
+
+---
+
+# Backend → verify Supabase JWT
+
+Install:
+
+```bash id="m8j9mz"
+npm install @supabase/supabase-js
+```
+
+Create admin client:
+
+```ts id="xhcnwq"
+import { createClient } from "@supabase/supabase-js";
+
+export const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+);
+```
+
+---
+
+# Verify token
+
+Express example:
+
+```ts id="vgbofz"
+const token = req.headers.authorization?.split(" ")[1];
+
+if (!token) {
+  return res.status(401).json({
+    error: "No token",
+  });
+}
+
+const {
+  data: { user },
+  error,
+} = await supabase.auth.getUser(token);
+
+if (error || !user) {
+  return res.status(401).json({
+    error: "Invalid token",
+  });
+}
+```
+
+Now backend knows:
+
+- authenticated user
+- user id
+- email
+
+---
+
+# Then call Gemini
+
+```ts id="rr5oet"
+const response = await gemini.models.generateContent({
+  model: "gemini-2.5-flash",
+  contents: prompt,
+});
+```
+
+---
+
+# Important architecture rule
+
+NEVER call Gemini directly from frontend with API key.
+
+Even if hidden in env vars:
+
+```txt id="ex9uad"
+VITE_GEMINI_API_KEY
+```
+
+Frontend env vars are public.
+
+Users can inspect them instantly.
+
+---
+
+# Very common stack
+
+Frontend:
+
+- React
+- Zustand
+- Supabase Auth
+
+Backend:
+
+- Express/Hono/Fastify
+- Supabase JWT verification
+- Gemini/OpenAI API
+
+You’re now moving from auth into actual full-stack app security architecture.

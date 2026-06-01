@@ -11,13 +11,14 @@ export const useNotesStore = create<NotesState>()((set) => ({
   lastPromptAction: "",
   lastPromptContent: "",
   isSaving: false,
-  addNote: async () => {
+  addNote: async (userId : string) => {
     set({ isSaving: true })
     const newNote = {
       title: "Untitled",
       content: "",
       updated_at: new Date().toISOString(),
       tags: [],
+      created_by: userId
     };
     const { data, error } = await supabase
       .from("notes")

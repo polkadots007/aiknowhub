@@ -352,3 +352,145 @@ useAuthStore.getState().logout();
 
 navigate("/login");
 }
+
+alter table notes
+add column created_by uuid references auth.users(id);
+
+alter table notes enable row level security;
+
+create policy "Users can view own notes"
+on notes
+for select
+using (auth.uid() = created_by);
+
+create policy "Users can insert own notes"
+on notes
+for insert
+with check (auth.uid() = created_by);
+
+create policy "Users can update own notes"
+on notes
+for update
+using (auth.uid() = created_by);
+
+create policy "Users can delete own notes"
+on notes
+for delete
+using (auth.uid() = created_by);
+
+create table note_users (
+note_id bigint references notes(id) on delete cascade,
+user_id uuid references auth.users(id) on delete cascade,
+role text default 'viewer',
+primary key (note_id, user_id)
+);
+
+create policy "Users can view shared notes"
+on notes
+for select
+using (
+auth.uid() = created_by
+or exists (
+select 1
+from note_users nu
+where nu.note_id = notes.id
+and nu.user_id = auth.uid()
+)
+);
+
+async function getUserIdByEmail(email: string) {
+const { data, error } = await supabase
+.from("profiles")
+.select("id")
+.eq("email", email)
+.single();
+
+if (error) throw error;
+
+return data.id;
+}
+
+async function shareNoteByEmail(noteId: number, email: string) {
+const userId = await getUserIdByEmail(email);
+
+const { error } = await supabase.from("note_users").insert({
+note_id: noteId,
+user_id: userId,
+role: "viewer",
+});
+
+if (error) throw error;
+}
+
+create or replace function share_note_by_email(
+p_note_id bigint,
+p_email text
+)
+returns void
+language plpgsql
+security definer
+as $$
+declare
+target_user uuid;
+begin
+select id into target_user
+from profiles
+where email = p_email;
+
+if target_user is null then
+raise exception 'User not found';
+end if;
+
+insert into note_users (note_id, user_id, role)
+values (p_note_id, target_user, 'viewer');
+end;
+
+$$
+;
+await supabase.rpc("share_note_by_email", {
+  p_note_id: noteId,
+  p_email: email,
+});
+$$
+
+create or replace function share_note_by_emails(
+p_note_id bigint,
+p_emails text[]
+)
+returns void
+language plpgsql
+security definer
+as $$
+declare
+e text;
+target_user uuid;
+begin
+foreach e in array p_emails
+loop
+select id into target_user
+from profiles
+where email = e;
+
+    if target_user is not null then
+      insert into note_users (note_id, user_id, role)
+      values (p_note_id, target_user, 'viewer')
+      on conflict do nothing;
+    end if;
+
+end loop;
+end;
+
+$$
+;
+
+await supabase.rpc("share_note_by_emails", {
+  p_note_id: noteId,
+  p_emails: emails,
+});
+$$
+
+alter table note_users
+add constraint note_users_user_id_fkey
+foreign key (user_id)
+references profiles(id)
+on delete cascade;

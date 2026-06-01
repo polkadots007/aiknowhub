@@ -27,7 +27,7 @@ export interface NotesState {
     setPromptContent: (content : string) => void,
     setLastPromptAction: (action : string) => void,
     setSearchType: (key : SearchTypeProp) => void,
-    addNote : () => void,
+    addNote : (userId : string) => void,
     setActiveNote: (note: Note | null) => void,
     updateNote: (note: Note) => void,
     updateTitle: (updatedNoteId: number, updatedTitle: string) => void,
@@ -89,3 +89,6 @@ export interface AuthState {
 
   logout: () => void;
 }
+
+export interface SharedUsersProp  { 
+  user_id: number; role: string; profiles: { email: string } }
