@@ -178,10 +178,9 @@ const Login = () => {
                   Password
                 </div>
 
-                {!isValidPassword && submitted && user.password.length > 0 && (
+                {submitted && user.password.length === 0 && (
                   <p className="text-red-500 text-sm mt-1">
-                    Password must be at least 8 characters and include
-                    uppercase, lowercase, number, and special character.
+                    Please enter a valid password
                   </p>
                 )}
 

@@ -10,19 +10,14 @@ export function isAbortError(error: unknown): boolean {
 }
 
 
-export async function fetchSharedUsers(noteId: string) {
-  const { data, error } = await supabase
-    .from("note_users")
-    .select(`
-      user_id,
-      role,
-      profiles (
-        email
-      )
-    `)
-    .eq("note_id", noteId);
+export async function fetchSharedUsers(noteId: number) {
+   const { data, error } = await supabase.rpc("get_note_members", {
+  note_id: noteId,
+});
 
-  if (error) throw error;
+      if (error) throw error;
 
   return data;
 }
+
+

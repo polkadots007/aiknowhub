@@ -494,3 +494,96 @@ add constraint note_users_user_id_fkey
 foreign key (user_id)
 references profiles(id)
 on delete cascade;
+alter table profiles
+add primary key (id);
+
+select
+tc.table_name,
+kcu.column_name,
+ccu.table_name as foreign_table_name,
+ccu.column_name as foreign_column_name
+from information_schema.table_constraints as tc
+join information_schema.key_column_usage as kcu
+on tc.constraint_name = kcu.constraint_name
+join information_schema.constraint_column_usage as ccu
+on ccu.constraint_name = tc.constraint_name
+where tc.constraint_type = 'FOREIGN KEY'
+and tc.table_name = 'note_users';
+
+create policy "Users can view shared notes"
+on notes
+for select
+using (
+auth.uid() = created_by
+or exists (
+select 1
+from note_users nu
+where nu.note_id = notes.id
+and nu.user_id = auth.uid()
+)
+);
+
+create policy "Users can view their own membership"
+on note_users
+for select
+using (
+user_id = auth.uid()
+);
+to see shared users
+create or replace function get_note_members(note_id bigint)
+returns setof note_users
+language sql
+security definer
+as $$
+select \*
+from note_users
+where note_users.note_id = note_id;
+
+$$
+;
+
+grant execute on function get_note_members(bigint)
+to authenticated;
+$$
+
+better function
+create or replace function get_note_members(note_id bigint)
+returns table (
+user_id uuid,
+role text,
+email text
+)
+language sql
+security definer
+as $$
+select nu.user_id, nu.role, p.email
+from note_users nu
+join profiles p on p.id = nu.user_id
+where nu.note_id = note_id;
+
+$$
+;
+
+
+supabase.rpc("function_name", { param_name: value })
+$$
+
+create or replace function get_note_members(note_id bigint)
+returns table (
+note_id bigint,
+user_id uuid,
+role text,
+email text
+)
+language sql
+security definer
+as $$
+  select
+    nu.note_id,
+    nu.user_id,
+    nu.role,
+    p.email
+  from note_users nu
+  join profiles p on p.id = nu.user_id
+  where nu.note_id = note_id;
+$$;

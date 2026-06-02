@@ -20,6 +20,7 @@ export interface NotesState {
     searchType: SearchTypeProp,
     lastPromptContent: string,
     isSaving: boolean,
+    loading: boolean,
     loadNotes: () => void,
     setTags: (updatedNoteId: number, tags: string[]) => void,
     setSearchTerm: (searchKey : string) => void,
@@ -91,4 +92,8 @@ export interface AuthState {
 }
 
 export interface SharedUsersProp  { 
-  user_id: number; role: string; profiles: { email: string } }
+  note_id: number;
+  user_id: string;
+  role: string;
+  email: string;
+}

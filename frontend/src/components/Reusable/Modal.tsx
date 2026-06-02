@@ -149,9 +149,9 @@ const ShareModal = ({
                 {sharedUsers.map((u) => (
                   <div
                     key={u.user_id}
-                    className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-xs"
+                    className="flex items-center gap-2 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-xs text-gray-400"
                   >
-                    {u.profiles?.email}
+                    {u?.email}
 
                     <span className="text-gray-400">({u.role})</span>
                   </div>

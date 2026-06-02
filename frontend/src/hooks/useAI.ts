@@ -4,10 +4,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useNotesStore } from "../store/useNotesStore";
 import { useChatStore } from "../store/useChatStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 export function useAI(){
 const activeNote = useNotesStore((state) => state.activeNote);
 const addToChatHistory = useChatStore((state) => state.addToChatHistory);
+const { session } = useAuthStore();
 
 const lastPromptAction = useNotesStore(
   (state) => state.lastPromptAction
@@ -37,11 +39,15 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
     if (activeNote) setPromptContent(activeNote.content);
     }
     if(!activeNote) throw new Error("Invalid Note");
+    if(!session) throw new Error("Invalid Session")
+    const token = session?.access_token;
+  console.log('session', session)
     try {
       const response = await fetch("http://localhost:3000/notes/ai", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+          headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           action: action,

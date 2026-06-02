@@ -11,6 +11,7 @@ export const useNotesStore = create<NotesState>()((set) => ({
   lastPromptAction: "",
   lastPromptContent: "",
   isSaving: false,
+  loading: false,
   addNote: async (userId : string) => {
     set({ isSaving: true })
     const newNote = {
@@ -77,12 +78,24 @@ export const useNotesStore = create<NotesState>()((set) => ({
     }));
   },
   setActiveNote: (note: Note | null) => set({ activeNote: note }),
-  loadNotes: async () => {
-      const { data, error } = await supabase.from("notes").select("*");
-    if(error) throw error;
-   set({
-    notes: data
-  })
+ loadNotes: async () => {
+  set({ loading: true });
+
+  try {
+    const { data, error } = await supabase
+      .from("notes")
+      .select("*");
+
+    if (error) throw error;
+
+    set({
+      notes: data || [],
+    });
+  } catch (err) {
+    console.error("Failed to load notes:", err);
+  } finally {
+    set({ loading: false });
+  }
 },
   updateNote: async (updatedNote: Note) => {
     set({ isSaving: true })
@@ -131,4 +144,6 @@ export const useNotesStore = create<NotesState>()((set) => ({
       activeNote: state.activeNote?.id === id ? null : state.activeNote,
     }));
   },
+    setLoading: (loading: boolean) => set({ loading : loading }),
+
 }));

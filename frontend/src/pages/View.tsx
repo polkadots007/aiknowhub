@@ -1,17 +1,21 @@
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useNotesStore } from "../store/useNotesStore";
 import type { Note } from "../types";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { NoteSkeleton } from "../helper/Modular";
+import { useDebounce } from "../hooks/useDebounce";
 type SearchType = "title" | "content" | "tags";
 
 const ViewNotes = () => {
   const notes = useNotesStore((state) => state.notes);
+  const loading = useNotesStore((state) => state.loading);
   const setActiveNote = useNotesStore((state) => state.setActiveNote);
   const updateTitle = useNotesStore((state) => state.updateTitle);
   const searchTerm = useNotesStore((state) => state.searchTerm);
   const searchType: SearchType = useNotesStore((state) => state.searchType);
   const [title, setTitle] = useState<string>("");
   const [isEditingId, setIsEditingId] = useState<number>(-1);
+  const debouncedSearch = useDebounce(searchTerm, 100);
 
   function updateNoteTitle(isEditingId: number, title: string) {
     if (isEditingId !== -1) {
@@ -48,27 +52,32 @@ const ViewNotes = () => {
     setActiveNote(note);
   }
   const filteredNotes = useMemo(() => {
-    if (searchTerm && searchTerm.length) {
+    if (!debouncedSearch) return notes;
+    if (debouncedSearch && debouncedSearch.length) {
       if (searchType !== "tags") {
         return notes.filter((note) =>
-          note[searchType].toLowerCase().includes(searchTerm.toLowerCase()),
+          note[searchType]
+            .toLowerCase()
+            .includes(debouncedSearch.toLowerCase()),
         );
       } else
         return notes.filter((note) =>
           note[searchType]
             ?.join(", ")
             .toLowerCase()
-            .includes(searchTerm.toLowerCase()),
+            .includes(debouncedSearch.toLowerCase()),
         );
     }
     return notes;
-  }, [notes, searchTerm, searchType]);
+  }, [notes, debouncedSearch, searchType]);
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="font-semibold text-4xl text-blue-500 text-left p-4 uppercase self-center">
         Notes
       </div>
       <div className="flext-start p-2 border border-slate-800 w-2/3 h-[80dvh] py-10 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] grid-rows-[repeat(auto-fit,minmax(140px,1fr))] gap-2">
+        {loading &&
+          Array.from({ length: 5 }).map((_, i) => <NoteSkeleton key={i} />)}
         {filteredNotes.map((note: Note) => (
           <div
             key={note?.id}
