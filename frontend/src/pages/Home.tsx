@@ -155,11 +155,11 @@ transition-transform duration-500"
                   </div>
                 </div>
                 <div className="flex flex-col gap-4 h-150 bg-violet-500/10 rounded-xl">
-                  <div className="h-20 w-50 mr-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
-                  <div className="h-10 w-50 ml-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
-                  <div className="h-40 w-50 mr-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
-                  <div className="h-20 w-50 ml-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
-                  <div className="h-20 w-50 mr-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
+                  <div className="h-20 w-full mr-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
+                  <div className="h-10 w-full ml-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
+                  <div className="h-40 w-full mr-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
+                  <div className="h-20 w-full ml-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
+                  <div className="h-20 w-full mr-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
                   <div className="h-10 w-full mt-auto bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-xl animate-pulse" />
                 </div>
               </div>

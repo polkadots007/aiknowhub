@@ -23,6 +23,9 @@ const AuthListener = () => {
           duration: 2000,
         });
       }
+      if (event === "PASSWORD_RECOVERY") {
+        navigate("/reset-password");
+      }
     });
 
     return () => {

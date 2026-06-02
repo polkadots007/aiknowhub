@@ -27,6 +27,7 @@ const Header = () => {
   const setTheme = useThemeStore((state: ThemeState) => state.setTheme);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openShareModal, setOpenShareModal] = useState<boolean>(false);
+  const [isPageLoading, setIsPageLoading] = useState<boolean>(false);
   const [emails, setEmails] = useState<string[]>([]);
   const { isLoading } = useAI();
   const { user, logout } = useAuthStore();
@@ -78,6 +79,7 @@ const Header = () => {
     });
   }
   async function handleLogOut() {
+    setIsPageLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -97,6 +99,8 @@ const Header = () => {
           duration: 2000,
         });
       }
+    } finally {
+      setIsPageLoading(false);
     }
   }
 
@@ -263,7 +267,7 @@ const Header = () => {
           sharedUsers={sharedUsers}
         />
       )}
-      {isLoading && <Spinner />}
+      {(isLoading || isPageLoading) && <Spinner />}
     </div>
   );
 };

@@ -25,14 +25,7 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/verify" element={<VerifyEmail />} />
           <Route path="/recover" element={<Recover />} />
-          <Route
-            path="/reset-password"
-            element={
-              <ProtectedRoute>
-                <ResetPassword />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           <Route
             path="/dashboard"

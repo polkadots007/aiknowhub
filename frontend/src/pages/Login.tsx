@@ -6,6 +6,7 @@ import type { UserLoginType } from "../types";
 import { supabase } from "../lib/supabase";
 import { toast } from "sonner";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
+import { Spinner } from "../components/Reusable/Spinner";
 
 const Login = () => {
   const [user, setUser] = useState<UserLoginType>({
@@ -14,6 +15,7 @@ const Login = () => {
   });
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, setloading] = useState<boolean>(false);
   const navigate = useNavigate();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex =
@@ -30,6 +32,7 @@ const Login = () => {
   }
   async function handleLogin() {
     setSubmitted(true);
+    setloading(true);
     if (!isValidEmail) {
       console.error("Invalid email");
       return;
@@ -69,6 +72,7 @@ const Login = () => {
       }
     } finally {
       setSubmitted(false);
+      setloading(false);
     }
   }
   function handleInput(type: keyof UserLoginType, value: string) {
@@ -275,6 +279,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+      {loading && <Spinner />}
     </div>
   );
 };

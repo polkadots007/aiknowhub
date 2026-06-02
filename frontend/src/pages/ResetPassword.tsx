@@ -160,7 +160,7 @@ const ResetPassword = () => {
                     transition-all duration-300
                     ${!isValidPassword && submitted && password.length > 0 ? "border-red-500" : "border-gray-400 dark:border-white/10"}
                     `}
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       required={true}
                       onChange={handlePassword}
                     ></input>
@@ -178,7 +178,7 @@ const ResetPassword = () => {
                         transition-colors
                       "
                       >
-                        {showPassword ? (
+                        {!showPassword ? (
                           <EyeSlashIcon className="w-5 h-5" />
                         ) : (
                           <EyeIcon className="w-5 h-5" />
@@ -230,7 +230,7 @@ const ResetPassword = () => {
                         : "border-gray-400 dark:border-white/10"
                     }
                     `}
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       required={true}
                       onChange={handleconfirmPassword}
                     ></input>
@@ -248,7 +248,7 @@ const ResetPassword = () => {
                         transition-colors
                       "
                       >
-                        {showConfirmPassword ? (
+                        {!showConfirmPassword ? (
                           <EyeSlashIcon className="w-5 h-5" />
                         ) : (
                           <EyeIcon className="w-5 h-5" />
