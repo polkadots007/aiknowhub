@@ -77,11 +77,11 @@ const ViewNotes = () => {
       </div>
       <div className="flext-start p-2 border border-slate-800 w-2/3 h-[80dvh] py-10 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] grid-rows-[repeat(auto-fit,minmax(140px,1fr))] gap-2">
         {loading &&
-          Array.from({ length: 5 }).map((_, i) => <NoteSkeleton key={i} />)}
+          Array.from({ length: 6 }).map((_, i) => <NoteSkeleton key={i} />)}
         {filteredNotes.map((note: Note) => (
           <div
             key={note?.id}
-            className="flex flex-col gap-2 h-fit p-4 items-center justify-start cursor-pointer hover:border hover:border-slate-800"
+            className="flex flex-col gap-2 h-fit p-4 w-1/6 items-center justify-start cursor-pointer hover:border hover:border-slate-800"
           >
             <DocumentTextIcon
               className="w-8 h-8 text-blue-500"

@@ -3,11 +3,12 @@ import {
   PlusIcon,
   ShareIcon,
   TrashIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
 import { Logo } from "../components/Reusable/Icons";
 import { useNotesStore } from "../store/useNotesStore";
 import type { NotesState, SharedUsersProp, ThemeState } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ConfirmationModal, ShareModal } from "../components/Reusable/Modal";
 import SearchBar from "./Search";
 import { Spinner } from "../components/Reusable/Spinner";
@@ -28,6 +29,7 @@ const Header = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openShareModal, setOpenShareModal] = useState<boolean>(false);
   const [isPageLoading, setIsPageLoading] = useState<boolean>(false);
+  const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
   const [emails, setEmails] = useState<string[]>([]);
   const { isLoading } = useAI();
   const { user, logout } = useAuthStore();
@@ -36,6 +38,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sharedUsers, setSharedUsers] = useState<SharedUsersProp[]>([]);
+  const profileRef = useRef<HTMLDivElement | null>(null);
 
   async function initiateShare() {
     if (!activeNote) return;
@@ -43,6 +46,10 @@ const Header = () => {
     const users = await fetchSharedUsers(activeNote.id);
     setSharedUsers(users);
     setOpenShareModal(true);
+  }
+
+  function toggleProfile() {
+    setShowProfileMenu((prev: boolean) => !prev);
   }
 
   const isLoginPage = location.pathname === "/login";
@@ -156,8 +163,14 @@ const Header = () => {
         addNote(user.id);
       }
     }
+    function handleClickAway(event: MouseEvent) {
+      if (!profileRef.current?.contains(event.target as Node)) {
+        setShowProfileMenu(false);
+      }
+    }
 
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("click", handleClickAway);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -224,16 +237,38 @@ const Header = () => {
                   </button>
                 </>
               )}
-              <Toggle toggled={isDarkMode} setToggle={handleToggle} />
               {isAuthenticated && (
-                <button
-                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800
+                <div className="relative" ref={profileRef}>
+                  <button
+                    className="group cursor-pointer border border-gray-400 rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-800 dark:hover:bg-white-800"
+                    onClick={toggleProfile}
+                  >
+                    <UserIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                  </button>
+                  {showProfileMenu && (
+                    <div className="absolute right-0 z-50 min-w-[150px] rounded-lg shadow-lg flex flex-col gap-2 dark:bg-white/10 backdrop-blur-xl bg-black/50 dark:text-white mt-2 p-4">
+                      <div className="">{user?.email || "User"}</div>
+                      <div className="flex items-center gap-4 py-2">
+                        <div className="h-px bg-white/10 flex-1" />
+                      </div>
+                      <div className="flex items-center gap-4 justify-between">
+                        Dark Mode
+                        <Toggle
+                          toggled={isDarkMode}
+                          setToggle={handleToggle}
+                        />{" "}
+                      </div>
+                      <button
+                        className="group flex gap-1 items-center px-1 py-1 rounded text-sm cursor-pointer hover:bg-blue-800
                   transition-colors duration-200 ease-in-out active:scale-[0.98]"
-                  onClick={handleLogOut}
-                >
-                  <ArrowRightStartOnRectangleIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
-                  Log Out
-                </button>
+                        onClick={handleLogOut}
+                      >
+                        <ArrowRightStartOnRectangleIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                        Log Out
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
