@@ -84,11 +84,15 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
       })
       return;
     }
+
+    if(!session) throw new Error("Invalid Session")
+    const token = session?.access_token;
     try {
       const response = await fetch("http://localhost:3000/notes/ai/tags", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           content: content,

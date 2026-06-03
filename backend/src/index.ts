@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import notesRoutes from './routes/ai.route'
 
+
 dotenv.config();
 
 const app = express();

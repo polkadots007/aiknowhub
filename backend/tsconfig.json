@@ -4,6 +4,8 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+        "typeRoots": ["./src/types", "./node_modules/@types"]
+
   }
 }
