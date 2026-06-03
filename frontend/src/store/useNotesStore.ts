@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { type NotesState, type Note, type SearchTypeProp } from "../types";
 import { supabase } from "../lib/supabase";
 
-export const useNotesStore = create<NotesState>()((set) => ({
+export const useNotesStore = create<NotesState>()((set, get) => ({
   notes: [],
   activeNote: null,
   searchTerm: "",
@@ -12,6 +12,8 @@ export const useNotesStore = create<NotesState>()((set) => ({
   lastPromptContent: "",
   isSaving: false,
   loading: false,
+  selectable: false,
+  selectedNoteIDs : new Set(),
   addNote: async (userId : string) => {
     set({ isSaving: true })
     const newNote = {
@@ -144,6 +146,27 @@ export const useNotesStore = create<NotesState>()((set) => ({
       activeNote: state.activeNote?.id === id ? null : state.activeNote,
     }));
   },
-    setLoading: (loading: boolean) => set({ loading : loading }),
+  deleteNotes: async (ids: Set<number>) => {
+    const idsList = Array.from(ids);
+    const { error } = await supabase.from("notes").delete().in("id", idsList);
+    if (error) throw error;
+    set((state) => ({
+      notes: state.notes.filter((note: Note) => !idsList.includes(note.id)),
+    }));
+  },
+    setLoading: (loading: boolean) => set({ loading }),
+    updateSelectable: (selectable: boolean) => set({ selectable: selectable, selectedNoteIDs: new Set() }),
+    updateSelectedNoteIDs : (note_id : number) => {
+       const next = new Set(get().selectedNoteIDs);
 
+      if (next.has(note_id)) {
+        next.delete(note_id);
+      } else {
+        next.add(note_id);
+      }
+      set({
+        selectedNoteIDs : next
+      })
+      
+    }
 }));

@@ -1,7 +1,7 @@
 import { DocumentTextIcon } from "@heroicons/react/24/outline";
 import { useNotesStore } from "../store/useNotesStore";
 import type { Note } from "../types";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { NoteSkeleton } from "../helper/Modular";
 import { useDebounce } from "../hooks/useDebounce";
 type SearchType = "title" | "content" | "tags";
@@ -9,7 +9,12 @@ type SearchType = "title" | "content" | "tags";
 const ViewNotes = () => {
   const notes = useNotesStore((state) => state.notes);
   const loading = useNotesStore((state) => state.loading);
+  const selectable = useNotesStore((state) => state.selectable);
   const setActiveNote = useNotesStore((state) => state.setActiveNote);
+  const selectedNoteIDs = useNotesStore((state) => state.selectedNoteIDs);
+  const updateSelectedNoteIDs = useNotesStore(
+    (state) => state.updateSelectedNoteIDs,
+  );
   const updateTitle = useNotesStore((state) => state.updateTitle);
   const searchTerm = useNotesStore((state) => state.searchTerm);
   const searchType: SearchType = useNotesStore((state) => state.searchType);
@@ -70,26 +75,34 @@ const ViewNotes = () => {
     }
     return notes;
   }, [notes, debouncedSearch, searchType]);
+
+  function handleClick(note: Note) {
+    if (!note) return;
+    if (!selectable) {
+      focusNote(note);
+    }
+    updateSelectedNoteIDs(note.id);
+  }
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center min-h-[calc(100vh-100px)]">
       <div className="font-semibold text-4xl text-blue-500 text-left p-4 uppercase self-center">
         Notes
       </div>
-      <div className="flext-start p-2 border border-slate-800 w-2/3 h-[80dvh] py-10 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] grid-rows-[repeat(auto-fit,minmax(140px,1fr))] gap-2">
+      <div className="flext-start border border-slate-800 w-2/3 h-[80dvh] p-10 grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] grid-rows-[repeat(auto-fit,minmax(140px,1fr))] gap-2">
         {loading &&
           Array.from({ length: 6 }).map((_, i) => <NoteSkeleton key={i} />)}
         {filteredNotes.map((note: Note) => (
           <div
             key={note?.id}
-            className="flex flex-col gap-2 h-fit p-4 w-1/6 items-center justify-start cursor-pointer hover:border hover:border-slate-800"
+            className={`flex flex-col gap-2 h-fit py-4 px-12 max-w-1/6 items-center justify-start cursor-pointer hover:border hover:border-slate-800 ${selectable && selectedNoteIDs.has(note.id) ? "border border-slate-800 bg-black/50" : ""}`}
           >
             <DocumentTextIcon
-              className="w-8 h-8 text-blue-500"
-              onClick={() => focusNote(note)}
+              className={`w-8 h-8 text-blue-500 ${selectable && selectedNoteIDs.has(note.id) ? "text-white" : ""}`}
+              onClick={() => handleClick(note)}
             />
             {isEditingId !== note.id ? (
               <div
-                className="text-blue-600 dark:text-white text-center line-clamp-2"
+                className={`text-blue-600 dark:text-white text-center line-clamp-2 ${selectable && selectedNoteIDs.has(note.id) ? "text-white" : ""}`}
                 onDoubleClick={(event: React.MouseEvent<HTMLDivElement>) =>
                   onEditTitle(event, note)
                 }

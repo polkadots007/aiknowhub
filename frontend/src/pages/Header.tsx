@@ -1,5 +1,6 @@
 import {
   ArrowRightStartOnRectangleIcon,
+  CheckIcon,
   PlusIcon,
   ShareIcon,
   TrashIcon,
@@ -23,7 +24,15 @@ import { toast } from "sonner";
 const Header = () => {
   const addNote = useNotesStore((state: NotesState) => state.addNote);
   const deleteNote = useNotesStore((state: NotesState) => state.deleteNote);
+  const deleteNotes = useNotesStore((state: NotesState) => state.deleteNotes);
+  const selectable = useNotesStore((state: NotesState) => state.selectable);
   const activeNote = useNotesStore((state: NotesState) => state.activeNote);
+  const selectedNoteIDs = useNotesStore(
+    (state: NotesState) => state.selectedNoteIDs,
+  );
+  const updateSelectable = useNotesStore(
+    (state: NotesState) => state.updateSelectable,
+  );
   const isDarkTheme = useThemeStore((state: ThemeState) => state.isDarkTheme);
   const setTheme = useThemeStore((state: ThemeState) => state.setTheme);
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -63,6 +72,14 @@ const Header = () => {
 
   function onConfirm() {
     if (activeNote) deleteNote(activeNote?.id);
+    if (selectedNoteIDs.size) deleteNotes(selectedNoteIDs);
+    if (activeNote || selectedNoteIDs.size)
+      toast.success(
+        `Deleted ${selectedNoteIDs.size || 1} note(s) successfully!`,
+        {
+          duration: 2000,
+        },
+      );
     setOpenModal(false);
   }
   function onCancel() {
@@ -114,6 +131,10 @@ const Header = () => {
   function handleAdd() {
     if (!user) return;
     addNote(user.id);
+  }
+  function handleSelect() {
+    if (!user) return;
+    updateSelectable(!selectable);
   }
   function getEmails(inputMailIds: string[]) {
     setEmails(inputMailIds);
@@ -178,7 +199,7 @@ const Header = () => {
   }, []);
 
   return (
-    <div>
+    <div className="max-h-[100px]">
       <div>
         <div className="bg-white dark:bg-gray-950 border-b border-slate-800 text-white p-4">
           <div className="flex justify-between">
@@ -209,33 +230,44 @@ const Header = () => {
                   </button>
                 </div>
               )}
-              {isAuthenticated && (
+              {(activeNote || selectable) && isAuthenticated && (
                 <button
-                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800 transition-colors duration-200 ease-in-out active:scale-[0.98]"
-                  onClick={handleAdd}
+                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800
+                    transition-colors duration-200 ease-in-out active:scale-[0.98]"
+                  onClick={() => setOpenModal(true)}
                 >
-                  <PlusIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
-                  New Note
+                  <TrashIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                  Delete Note(s)
                 </button>
               )}
-              {activeNote && isAuthenticated && (
+              {isAuthenticated && !activeNote && (
+                <button
+                  className={`group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800 transition-colors duration-200 ease-in-out active:scale-[0.98] ${selectable && "bg-blue-800"}`}
+                  onClick={handleSelect}
+                >
+                  <CheckIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                  Select
+                </button>
+              )}
+              {isAuthenticated && (
                 <>
                   <button
-                    className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800
-                    transition-colors duration-200 ease-in-out active:scale-[0.98]"
-                    onClick={() => setOpenModal(true)}
-                  >
-                    <TrashIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
-                    Delete Note
-                  </button>
-                  <button
                     className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800 transition-colors duration-200 ease-in-out active:scale-[0.98]"
-                    onClick={() => initiateShare()}
+                    onClick={handleAdd}
                   >
-                    <ShareIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
-                    Share note
+                    <PlusIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                    New Note
                   </button>
                 </>
+              )}
+              {activeNote && isAuthenticated && (
+                <button
+                  className="group flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer hover:bg-blue-800 transition-colors duration-200 ease-in-out active:scale-[0.98]"
+                  onClick={() => initiateShare()}
+                >
+                  <ShareIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                  Share note
+                </button>
               )}
               {isAuthenticated && (
                 <div className="relative" ref={profileRef}>
@@ -280,6 +312,7 @@ const Header = () => {
           onConfirm={onConfirm}
           onCancel={onCancel}
           title={activeNote?.title || "Note"}
+          toDeleteCount={selectedNoteIDs.size || 1}
         />
       )}
       {openShareModal && (

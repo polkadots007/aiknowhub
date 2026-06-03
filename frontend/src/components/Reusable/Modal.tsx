@@ -12,11 +12,13 @@ const ConfirmationModal = ({
   onConfirm,
   onCancel,
   title,
+  toDeleteCount,
 }: {
   open: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   title: string;
+  toDeleteCount: number;
 }) => {
   if (!open) return <></>;
   return (
@@ -35,8 +37,14 @@ const ConfirmationModal = ({
           </div>
         </div>
         <div className="bg-white dark:bg-transparent flex items-center justify-center h-30">
-          Do you want to delete{" "}
-          <span className="font-semibold px-2">{title}</span>?
+          {toDeleteCount === 1 ? (
+            <>
+              Do you want to delete{" "}
+              <span className="font-semibold px-2">{title}</span>?
+            </>
+          ) : (
+            <span>Do you want to delete {toDeleteCount} notes?</span>
+          )}
         </div>
         <div className="bg-white dark:bg-transparent flex justify-end gap-2 h-13 px-2">
           <button

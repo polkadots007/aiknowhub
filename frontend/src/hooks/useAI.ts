@@ -77,7 +77,13 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
     }
   }
 
-  async function generateTags(id: number, content: string) {
+  async function generateTags(content: string) {
+    if(!content.length) {
+      toast.warning("No content found. Start writing!", {
+        duration: 2000
+      })
+      return;
+    }
     try {
       const response = await fetch("http://localhost:3000/notes/ai/tags", {
         method: "POST",

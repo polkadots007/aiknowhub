@@ -153,7 +153,7 @@ const Editor = () => {
   }, [handleKeyDown]);
 
   return (
-    <div className="flex flex-row gap-2 justify-center items-start">
+    <div className="flex flex-row gap-2 justify-center items-start min-h-[calc(100vh-110px)] py-4">
       <TagsPanel
         key={activeNote?.id}
         noteId={activeNote?.id ?? -1}

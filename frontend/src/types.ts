@@ -21,6 +21,8 @@ export interface NotesState {
     lastPromptContent: string,
     isSaving: boolean,
     loading: boolean,
+    selectable: boolean,
+    selectedNoteIDs: Set<number>,
     loadNotes: () => void,
     setTags: (updatedNoteId: number, tags: string[]) => void,
     setSearchTerm: (searchKey : string) => void,
@@ -32,7 +34,11 @@ export interface NotesState {
     setActiveNote: (note: Note | null) => void,
     updateNote: (note: Note) => void,
     updateTitle: (updatedNoteId: number, updatedTitle: string) => void,
-    deleteNote: (id: number) => void
+    deleteNote: (id: number) => void,
+    deleteNotes: (ids: Set<number>) => void,
+    setLoading: (loading : boolean) => void
+    updateSelectable: (selectable: boolean) => void,
+    updateSelectedNoteIDs: (note_id: number) => void
 
 }
 

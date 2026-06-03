@@ -90,13 +90,13 @@ const AIResponsePanel = ({ noteId, content, saveSelection }: AIPanelProps) => {
     });
   }, [messages, isGenerating]);
   return (
-    <div className="w-[25dvw] border-1 border-blue-600 px-3 py-1">
-      <div className="flex items-center gap-2">
-        <div className="border-b flex gap-2 flex-1">
+    <div className="w-[25dvw] border-1 border-blue-600 px-3 rounded-xl">
+      <div className="flex items-start gap-2">
+        <div className="border-b flex gap-2 flex-1 pb-4">
           <img src={geminiLogo} alt="Gemini Logo" width="50" height="50" />
           <h2 className="py-5 dark:!text-white">Gemini</h2>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto py-2">
           <ActionDropdown
             values={[
               { key: "replace", val: "Replace Note with Response", group: 1 },

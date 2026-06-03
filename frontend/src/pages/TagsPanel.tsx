@@ -16,7 +16,8 @@ const TagsPanel = ({ noteId, content, tags }: TagsPanelProps) => {
     setTagsInput(event.target.value);
   }
   async function generateAITags() {
-    const tags = await generateTags(noteId, content);
+    if (!noteId) return;
+    const tags = await generateTags(content);
     setTagsInput(tags.toLowerCase());
     const newTags: string[] = tags
       .split(",")
@@ -40,9 +41,9 @@ const TagsPanel = ({ noteId, content, tags }: TagsPanelProps) => {
   }, [tagsInput, noteId, tags, setTags]);
 
   return (
-    <div className="w-[20dvw] px-3 py-1">
+    <div className="w-[20dvw] px-3">
       <div className="flex justify-between items-center gap-2">
-        <h2 className="border-b py-5 dark:!text-white">Tags</h2>
+        <h2 className="border-b py-3 dark:!text-white">Tags</h2>
         <button
           className="flex gap-1 items-center bg-blue-600 px-3 py-1 rounded text-sm cursor-pointer text-white hover:bg-blue-800"
           onClick={() => generateAITags()}
