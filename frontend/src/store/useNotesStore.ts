@@ -87,7 +87,7 @@ export const useNotesStore = create<NotesState>()((set, get) => ({
     const { data, error } = await supabase
       .from("notes")
       .select("*");
-
+      
     if (error) throw error;
 
     set({
