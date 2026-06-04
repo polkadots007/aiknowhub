@@ -20,7 +20,7 @@ const Home = () => {
   return (
     <div className="flex flex-col">
       <Header />
-      <div className="dark:bg-[#0b1020] flex h-[100dvh] pt-24">
+      <div className="dark:bg-[#0b1020] flex min-h-[calc(100vh-100px)] pt-16">
         <section className="relative overflow-hidden p-16 w-1/2 pl-24">
           <div className="flex gap-2 justify-center items-center text-gray-800 dark:text-white px-4 py-2 border border-gray-600 rounded-xl w-fit">
             <img src={geminiLogo} alt="Gemini Logo" width="30" height="30" />
