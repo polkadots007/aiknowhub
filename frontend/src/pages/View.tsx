@@ -84,7 +84,7 @@ const ViewNotes = () => {
     updateSelectedNoteIDs(note.id);
   }
   return (
-    <div className="flex flex-col justify-center items-center min-h-[calc(100vh-100px)]">
+    <div className="flex flex-col justify-start items-center min-h-[calc(100vh-100px)]">
       <div className="font-semibold text-4xl text-blue-500 text-left p-4 uppercase self-center">
         Notes
       </div>

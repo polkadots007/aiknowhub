@@ -278,7 +278,7 @@ const Header = () => {
                     className="group cursor-pointer border border-gray-400 rounded-full w-10 h-10 flex items-center justify-center hover:bg-blue-800 dark:hover:bg-white-800"
                     onClick={toggleProfile}
                   >
-                    <UserIcon className="w-6 h-6 text-white dark:text-blue-500 group-hover:stroke-white" />
+                    <UserIcon className="w-6 h-6 text-blue-400 dark:text-white dark:text-blue-500 group-hover:stroke-white" />
                   </button>
                   {showProfileMenu && (
                     <div className="absolute right-0 z-50 min-w-[150px] rounded-lg shadow-lg flex flex-col gap-2 dark:bg-white/10 backdrop-blur-xl bg-black/50 dark:text-white mt-2 p-4">

@@ -24,7 +24,7 @@ const SearchBar = () => {
   }, [searchWord]);
 
   return (
-    <div className="flex gap-2 w-1/3 items-center">
+    <div className="flex gap-2 w-2/4 items-center border border-blue-400 rounded-xl p-2">
       <MagnifyingGlassIcon className="w-6 h-6 text-blue-500" />
       <input
         className="w-full h-6 text-blue-500 focus:outline-none"
