@@ -47,7 +47,7 @@ const SignUp = () => {
         email: user.email,
         password: user.password,
         options: {
-          emailRedirectTo: "http://localhost:5173/auth/callback",
+          emailRedirectTo: `${import.meta.env.VITE_APP_URL}/auth/callback`,
         },
       });
 

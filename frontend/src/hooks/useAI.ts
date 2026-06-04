@@ -43,7 +43,7 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
     const token = session?.access_token;
   console.log('session', session)
     try {
-      const response = await fetch("http://localhost:3000/notes/ai", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/notes/ai`, {
         method: "POST",
           headers: {
         "Content-Type": "application/json",
@@ -88,7 +88,7 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
     if(!session) throw new Error("Invalid Session")
     const token = session?.access_token;
     try {
-      const response = await fetch("http://localhost:3000/notes/ai/tags", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}notes/ai/tags`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
