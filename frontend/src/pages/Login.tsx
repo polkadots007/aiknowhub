@@ -45,7 +45,7 @@ const Login = () => {
     }
 
     try {
-      const { _, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email: user.email,
         password: user.password,
       });

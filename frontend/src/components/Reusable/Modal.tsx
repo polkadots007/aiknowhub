@@ -70,7 +70,6 @@ const ShareModal = ({
   open,
   onConfirm,
   onCancel,
-  title,
   getEmails,
   sharedUsers,
 }: {
