@@ -112,7 +112,7 @@ const Home = () => {
         </section>
         <div className="w-1/2 pr-24 pt-16">
           <div
-            className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-[0_0_60px_rgba(139,92,246,0.15)] rotate-[2deg]
+            className="bg-white/[0.03] backdrop-blur-xl border border-black/50 dark:border-white/10 rounded-3xl p-6 shadow-[0_0_60px_rgba(139,92,246,0.15)] rotate-[2deg]
 hover:rotate-0
 transition-transform duration-500"
           >
@@ -139,19 +139,19 @@ transition-transform duration-500"
                     `}</style>
 
                   <div className="flex flex-col gap-3 h-full">
-                    <div className="h-6 bg-white/10 rounded-md w-full flex items-center px-2">
+                    <div className="h-6 bg-black/50  text-white dark:bg-white/10 rounded-md w-full flex items-center px-2">
                       <span className="text-sm text-gray/90">
                         AIKnowhub is very
                       </span>
                     </div>
-                    <div className="h-6 bg-white/10 rounded-md w-5/6 flex items-center px-2">
+                    <div className="h-6 bg-black/50  text-white dark:bg-white/10 rounded-md w-5/6 flex items-center px-2">
                       <span className="text-sm text-gray/90">seriously</span>
                     </div>
-                    <div className="h-6 bg-white/10 rounded-md w-3/4 flex items-center px-2">
+                    <div className="h-6 bg-black/50  text-white dark:bg-white/10 rounded-md w-3/4 flex items-center px-2">
                       <span className="text-sm text-gray/90">thinking...</span>
                       <span className="cursor ml-2 w-1 h-5 bg-white inline-block" />
                     </div>
-                    <div className="h-6 bg-white/10 rounded-md w-2/3 mt-auto" />
+                    <div className="h-6 bg-black/50  text-white dark:bg-white/10 rounded-md w-2/3 mt-auto" />
                   </div>
                 </div>
                 <div className="flex flex-col gap-4 h-150 bg-violet-500/10 rounded-xl">

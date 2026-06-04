@@ -222,13 +222,16 @@ const Header = () => {
                     Sign Up
                   </button>
                   <button
-                    className="group border border-blue-600 px-6 py-2 rounded-xl  text-sm cursor-pointer hover:bg-gradient-to-r hover:from-violet-500 hover:to-blue-500 dark:text-white border border-white/10 bg-white/5 backdrop-blur-lg
+                    className="group border border-blue-600 px-6 py-2 rounded-xl text-blue-600 text-sm cursor-pointer hover:bg-gradient-to-r hover:from-violet-500 hover:to-blue-500 dark:text-white border dark:border-white/10 bg-white/5 backdrop-blur-lg
              hover:bg-white/10 hover:text-white"
                     onClick={() => redirectToLogIn()}
                   >
                     Log In
                   </button>
                 </div>
+              )}
+              {!isAuthenticated && (
+                <Toggle toggled={isDarkMode} setToggle={handleToggle} />
               )}
               {(activeNote || selectable) && isAuthenticated && (
                 <button
