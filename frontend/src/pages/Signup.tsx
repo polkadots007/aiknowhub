@@ -244,7 +244,7 @@ const SignUp = () => {
                 w-full py-3 rounded-xl text-sm cursor-pointer
                 bg-gradient-to-r from-violet-500 to-blue-500
                 hover:from-violet-600 hover:to-blue-600
-                text-blue-600 dark:text-white
+                text-white
                 transition-all duration-300
                 hover:scale-[1.02]
                 shadow-lg shadow-violet-500/20
