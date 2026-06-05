@@ -18,11 +18,8 @@ const Login = () => {
   const [loading, setloading] = useState<boolean>(false);
   const navigate = useNavigate();
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   const isValidEmail = emailRegex.test(user.email);
-  const isValidPassword = passwordRegex.test(user.password);
 
   function redirectToSignUp() {
     navigate("/signUp");
@@ -35,12 +32,6 @@ const Login = () => {
     setloading(true);
     if (!isValidEmail) {
       console.error("Invalid email");
-      return;
-    }
-    if (!isValidPassword) {
-      console.error(
-        "Password must contain uppercase, lowercase, number and special character",
-      );
       return;
     }
 

@@ -41,7 +41,6 @@ async function generateAI(action: string, content: string, re?: boolean, signal?
     if(!activeNote) throw new Error("Invalid Note");
     if(!session) throw new Error("Invalid Session")
     const token = session?.access_token;
-  console.log('session', session)
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/notes/ai`, {
         method: "POST",
