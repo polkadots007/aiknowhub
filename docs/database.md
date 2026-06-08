@@ -57,7 +57,7 @@ CONSTRAINT profiles_pkey PRIMARY KEY (id),
 CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
 
-## Stored Procedures (SPC)
+## Stored Procedures (RPC)
 
 | routine_name         | routine_type | data_type |
 | -------------------- | ------------ | --------- |
@@ -146,6 +146,21 @@ where email = e;
 end loop;
 end;
 $function$
+
+### delete_old_chats
+
+create or replace function delete_old_chats(days int)
+returns void
+language plpgsql
+as $$
+begin
+delete from chats
+where created_at < now() - (days \* interval '1 day');
+end;
+
+$function$
+
+- called manually when needed usually after 30 days
 
 ## Row Level Security
 
@@ -249,3 +264,6 @@ WHERE n.id = chats.note_id
 AND n.created_by = auth.uid()
 )
 );
+
+$$
+$$
